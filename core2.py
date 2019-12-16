@@ -6,7 +6,10 @@ Notes:
     2. Printout polynomial needs to consider:
         1. Coefficient is 1
         2. Coefficient is complex.
-    3. Repeated Roots have bad convergence, consider truncation error for derivatives evaluation.
+    3. Repeated Roots have bad convergence and accuracy.
+        1. solution:
+            1. Detect the repeating roots from slow convergence rate in a strict way
+            2. Use it's derivative to look for the root.
 Things to learn:
     1. Learn about python typing.
         * Type hint doesn't work for type checking during runtime.
@@ -60,7 +63,7 @@ def solve(p, x0:Number = None, TOL=1e-14, maxitr=1e2):
     def f(point):
         res = p.eval_at(point, derv=1)
         return point - res[0]/res[1]
-    return fixed_point_iteration(f, x0, TOL=TOL, maxitr=maxitr)
+    return fixed_point_iteration(f, x0, TOL, maxitr)
 
 
 def fixed_point_iteration(g, x0: Number, TOL=1e-14, maxitr: int=20):
@@ -78,10 +81,12 @@ def fixed_point_iteration(g, x0: Number, TOL=1e-14, maxitr: int=20):
     """
     x1 = g(x0)
     itr = 1
+
     while abs(x1 - x0) > TOL and itr < maxitr:
         x0 = x1
         x1 = g(x1)
         itr += 1
+        print(f"itr: {itr}; abs(x1 - x0) = {abs(x1 - x0)} exit? {not(abs(x1 - x0) > TOL and itr < maxitr)}")
     return x1
 
 
@@ -198,10 +203,24 @@ if __name__ == '__main__':
     p = Polynomial([1/x for x in range(100, 0, -1)] + [0]) # should be ln(1-x) for x in (-1, 1)
     print(p.eval_at(-0.5, 3))
 
-    p = Polynomial([1, 0, -2])
-    print(solve(p))
+    # p = Polynomial([1, 0, -2])
+    # print(solve(p))
 
     p = Polynomial([1, 3, 3, 1])
     print(solve(p, TOL=0, maxitr=1e10))
 
+    p = Polynomial([1, 3, 3, 1])
+    print(solve(p, TOL=-1, maxitr=1e2))
+
+    p = Polynomial([1, 3, 3, 1])
+    print(solve(p, x0 = 0.5 + (-1)**(0.5),TOL=-1, maxitr=1e2))
+
+    p = Polynomial([1, 4, 6, 4, 1])
+    print(solve(p, x0=0.5, TOL=0, maxitr=1e2))
+
+    p = Polynomial([1, 2, 1])
+    print("A thing about truncation error: ")
+    print(p.eval_at(-1 - 1e-13, derv=2))
+
+    print("Slow convergence and bad accuracy for repeated roots. ")
 
