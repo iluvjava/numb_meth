@@ -6,7 +6,7 @@ Notes:
     2. Printout polynomial needs to consider:
         1. Coefficient is 1
         2. Coefficient is complex.
-    3. Repeated Roots have bad convergence rate because of the numerator super small and denominator exploding
+    3. Repeated Roots have bad convergence, consider truncation error for derivatives evaluation.
 Things to learn:
     1. Learn about python typing.
         * Type hint doesn't work for type checking during runtime.
@@ -16,7 +16,6 @@ Number = Union[float, int, complex]
 Vector = List[Number]
 
 from random import random
-
 
 def val(a: Vector, alpha: Number) -> List[Number]:
     """
@@ -30,10 +29,9 @@ def val(a: Vector, alpha: Number) -> List[Number]:
     b = [a[0]]
     i = 1
     l = len(a)
-    while i < len(a):
-        if i < l:
-            b.append(alpha * b[i - 1] + a[i])
-            i += 1
+    while i < l:
+        b.append(alpha * b[i - 1] + a[i])
+        i += 1
     return b
 
 
