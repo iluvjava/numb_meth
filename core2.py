@@ -6,13 +6,16 @@ Notes:
     2. Printout polynomial needs to consider:
         1. Coefficient is 1
         2. Coefficient is complex.
+    3. Repeated Roots have bad convergence rate because of the numerator super small and denominator exploding
 Things to learn:
     1. Learn about python typing.
         * Type hint doesn't work for type checking during runtime.
 """
 from typing import List, Union, Dict
-Number = Union[(float, int, complex)]
+Number = Union[float, int, complex]
 Vector = List[Number]
+
+from random import random
 
 
 def val(a: Vector, alpha: Number) -> List[Number]:
@@ -23,53 +26,64 @@ def val(a: Vector, alpha: Number) -> List[Number]:
     :param alpha:
     :return:
     """
-    assert not a is None or len(a) == 0, 'Error'
+    assert not(a is None or len(a) == 0), 'Error'
     b = [a[0]]
     i = 1
     l = len(a)
-    while 1:
+    while i < len(a):
         if i < l:
-            b.append(alpha * b[(i - 1)] + a[i])
+            b.append(alpha * b[i - 1] + a[i])
             i += 1
-
     return b
 
 
 def derv_val(a: Vector, alpha: Number, depth: int=0) -> List[List[Number]]:
-    assert not a is None or (len(a) == 0 or depth >= len(a) or depth < 0), 'Error'
+    assert a is not None or (len(a) == 0 or depth >= len(a) or depth < 0), 'Error'
     I = 1
     tbl = [val(a, alpha)]
-    results = [tbl[(-1)][(-1)]]
+    results = [tbl[-1][-1]]
     TaylorMultiplier = 1
-    while 1:
-        if I <= depth:
-            tbl.append(val(tbl[(-1)][:-1], alpha))
-            results.append(tbl[(-1)][(-1)] * TaylorMultiplier)
-            I += 1
-            TaylorMultiplier *= I
-
+    while I <= depth:
+        tbl.append(val(tbl[-1][:-1], alpha))
+        results.append(tbl[-1][-1] * TaylorMultiplier)
+        I += 1
+        TaylorMultiplier *= I
     return results
 
 
-def solve(p):
+def solve(p, x0:Number = None, TOL=1e-14, maxitr=1e2):
     """
         Given p(x) where p(x) is a polynomial, it try newton's iterations and solve for one of its real roots.
 
     :return:
         Map, root to its multiplicity.
     """
-    pass
+    x0 = random() if x0 is None else x0
+    def f(point):
+        res = p.eval_at(point, derv=1)
+        return point - res[0]/res[1]
+    return fixed_point_iteration(f, x0, TOL=TOL, maxitr=maxitr)
 
 
-def fixed_point_iteration(g, x0: Number, TOL=0.0001, maxitr: int=20):
+def fixed_point_iteration(g, x0: Number, TOL=1e-14, maxitr: int=20):
+    """
+    :param g:
+        The fixed point iteration function
+    :param x0:
+        The initial guess.
+    :param TOL:
+        The tolerance
+    :param maxitr:
+        The maximum number of iteration
+    :return:
+        None if not converging.
+    """
     x1 = g(x0)
     itr = 1
-    while 1:
-        if abs(x1 - x0) > TOL and itr < maxitr:
-            x0 = x1
-            x1 = g(x1)
-            itr += 1
-
+    while abs(x1 - x0) > TOL and itr < maxitr:
+        x0 = x1
+        x1 = g(x1)
+        itr += 1
     return x1
 
 
@@ -79,7 +93,7 @@ class Polynomial:
       * Evaluate an array of array of values for the value of the polynomial at a point and its derivatives.
     """
 
-    def __init__(self, coefficients: Union[(Dict[(int, Number)], List[Number])]):
+    def __init__(self, coefficients: Union[Dict[int, Number], List[Number]]):
         """
         Constructor.
         self._CoefficientsList:
@@ -95,7 +109,7 @@ class Polynomial:
         :except
             * A lot of exceptions
         """
-        assert not coefficients is None, 'Coefficient list is None.'
+        assert coefficients is not None, 'Coefficient list is None.'
         if type(coefficients) is dict:
             assert not len(coefficients.keys()) == 0, 'Coefficient list is empty.'
             lst = list(coefficients.keys())
@@ -108,7 +122,7 @@ class Polynomial:
             self._CoefficientsList = a
             self._Deg = pow_max
             return
-        assert not type(coefficients) is not list, 'Coefficients are not list of floats.'
+        assert type(coefficients) is list, 'Coefficients are not list of floats.'
         for I in range(len(coefficients)):
             if coefficients[I] != 0:
                 break
@@ -116,7 +130,7 @@ class Polynomial:
         self._CoefficientsList = coefficients[I:]
         self._Deg = len(coefficients) - 1
 
-    def eval_at(self, p: Union[(Number, Vector)], derv: int = 0):
+    def eval_at(self, p: Union[Number, Vector], derv: int = 0):
         """
             returns the value evaluated at p, or a list of value.
         :param p: point or points that evaluate the function at.
@@ -131,12 +145,14 @@ class Polynomial:
         assert not derv < 0 or derv > self._Deg, 'Derivative for Polynomial not Valid.'
         res = []
         if type(p) is list:
-            return
+            for value in p:
+                res.append(self.eval_at(value, derv))
+            return res
         # p is not a list
         if derv == 0:
-            return val(self._CoefficientsList, p)[(-1)]
-
+            return val(self._CoefficientsList, p)[-1]
         # p is a single value and derv is more than 0
+        return derv_val(self._CoefficientsList, p, derv)
 
     def factor_out(self, b: Number, poly: bool, remainder: bool):
         """
@@ -152,7 +168,7 @@ class Polynomial:
         newCoefficients = val(self._CoefficientsList, b)
         p = Polynomial(newCoefficients[:-1]) if poly else newCoefficients
         if remainder:
-            return p, newCoefficients[(-1)]
+            return p, newCoefficients[-1]
         return p
 
     def __repr__(self):
@@ -164,22 +180,30 @@ class Polynomial:
                 res += '(' + str(I) + ')' + ('*x**' + str(x_power) if x_power != 0 else '') + ' + '
             counter += 1
 
-        if res[(-2)] != '+':
+        if res[-2] != '+':
             return res
         return res[:-3]
 
 
 if __name__ == '__main__':
-    print(str(val([1, 1], 1)))
-    print(str(val([1, 1, 1], 2)))
-    print(str(derv_val(a=[1, 2, 3], alpha=2, depth=0)))
-    print(str(derv_val(a=[1, 2, 3], alpha=2, depth=1)))
-    print(str(derv_val(a=[1, 2, 3], alpha=2, depth=2)))
-    p = Polynomial({2: 2, 4: 4})
-    print(p._CoefficientsList)
-    print(p)
     p = Polynomial([1, 1, 1])
-    print(p._CoefficientsList)
     print(p)
-    print('Factoring out (x - 0)')
-    print(p.factor_out(0))
+    res = p.eval_at(1, derv=2)
+    print(res)
+
+    res = p.eval_at([x/100 for x in range(100)])
+    print(res)
+
+    p = Polynomial([1]*100) # should be 1/(1-x) for x in (-1, 1)
+    print(p.eval_at(-0.5))
+
+    p = Polynomial([1/x for x in range(100, 0, -1)] + [0]) # should be ln(1-x) for x in (-1, 1)
+    print(p.eval_at(-0.5, 3))
+
+    p = Polynomial([1, 0, -2])
+    print(solve(p))
+
+    p = Polynomial([1, 3, 3, 1])
+    print(solve(p, TOL=0, maxitr=1e10))
+
+
