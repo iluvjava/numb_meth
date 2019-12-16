@@ -1,10 +1,3 @@
-# uncompyle6 version 3.5.0
-# Python bytecode 3.5 (3350)
-# Decompiled from: Python 3.8.0 (default, Oct 23 2019, 18:51:26) 
-# [GCC 9.2.0]
-# Embedded file name: C:\Users\Administrator\source\repos\numb_meth\core.py
-# Compiled at: 2019-12-15 16:37:36
-# Size of source mod 2**32: 6106 bytes
 """
 Method that is related to evaluating value of polynomials and its derivative at a certain point: alpha
 
@@ -17,11 +10,10 @@ Things to learn:
     1. Learn about python typing.
         * Type hint doesn't work for type checking during runtime.
 """
-from typing import List
-from typing import Union
-from typing import Dict
+from typing import List, Union, Dict
 Number = Union[(float, int, complex)]
 Vector = List[Number]
+
 
 def val(a: Vector, alpha: Number) -> List[Number]:
     """
@@ -124,7 +116,7 @@ class Polynomial:
         self._CoefficientsList = coefficients[I:]
         self._Deg = len(coefficients) - 1
 
-    def eval_at(self, p: Union[(Number, Vector)], derv: int):
+    def eval_at(self, p: Union[(Number, Vector)], derv: int = 0):
         """
             returns the value evaluated at p, or a list of value.
         :param p: point or points that evaluate the function at.
@@ -138,9 +130,13 @@ class Polynomial:
         """
         assert not derv < 0 or derv > self._Deg, 'Derivative for Polynomial not Valid.'
         res = []
-        if p is list:
+        if type(p) is list:
             return
-        return val(self._CoefficientsList)[(-1)]
+        # p is not a list
+        if derv == 0:
+            return val(self._CoefficientsList, p)[(-1)]
+
+        # p is a single value and derv is more than 0
 
     def factor_out(self, b: Number, poly: bool, remainder: bool):
         """
@@ -153,10 +149,10 @@ class Polynomial:
             q(x) or coefficents of q(x) depends on poly.
             R: The remainder if required.
         """
-        newcoefficients = val(self._CoefficientsList, b)
-        p = Polynomial(newcoefficients[:-1]) if poly else newcoefficients
+        newCoefficients = val(self._CoefficientsList, b)
+        p = Polynomial(newCoefficients[:-1]) if poly else newCoefficients
         if remainder:
-            return (p, newcoefficients[(-1)])
+            return p, newCoefficients[(-1)]
         return p
 
     def __repr__(self):
@@ -187,4 +183,3 @@ if __name__ == '__main__':
     print(p)
     print('Factoring out (x - 0)')
     print(p.factor_out(0))
-# okay decompiling core.pyc
