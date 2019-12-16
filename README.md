@@ -1,1 +1,1 @@
-"# numb_meth" 
+.idea/
