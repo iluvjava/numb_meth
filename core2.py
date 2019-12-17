@@ -123,7 +123,7 @@ class Polynomial:
         assert not(derv < 0 or derv > self._Deg), 'Derivative for Polynomial not Valid.'
         return derv_val(self._CoefficientsList, p, derv)[derv]
 
-    def factor_out(self, b: Number, poly: bool, remainder: bool):
+    def factor_out(self, b: Number, poly: bool = False, remainder: bool = False, multiplicity: int=1):
         """
             return q(x) such that p(x) = q(x)(x - b) + R, where R is a constant.
         :param b:
