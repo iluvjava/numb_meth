@@ -15,7 +15,6 @@ from core2 import *
 from typing import Type, Dict
 MyPolynomial = Type[Polynomial]
 
-
 def find_root(p: MyPolynomial, x0: Number = None):
     """
         Attempts to solve the polynomial at that point.
@@ -44,7 +43,7 @@ def find_root(p: MyPolynomial, x0: Number = None):
             x1 = g(x1)
             itr += 1
 
-        # Checking the fixed point iteration result for repeated roots.
+        # Checking the fixed point function result for repeated roots.
         dgdx = (g(x1+1e-4) - g(x1))/1e-4
         if abs(dgdx) < 1e-2:
             return x0, k + 1
@@ -53,9 +52,18 @@ def find_root(p: MyPolynomial, x0: Number = None):
 
     return None
 
-def find_roots(p:MyPolynomial):
 
-    pass
+def find_roots(p: MyPolynomial, results = None):
+    results = results if results is not None else {}
+
+    if p.deg() == 0:
+        return results
+
+    root, multiplicity = find_root(p)
+    results[root] = multiplicity
+    p = p.factor_out(root, multiplicity=multiplicity, poly=True)
+    return find_roots(p, results)
+
 
 
 if __name__ == "__main__":
@@ -68,7 +76,19 @@ if __name__ == "__main__":
     p = Polynomial([1, 5, 10, 10, 5, 1])
     print(find_root(p))
 
-    print("Let's try on a hard one: ")
     p = Polynomial([1, -9, 33, -63, 66, -36, 8])
-    print(find_root(p))
+    print(f"Let's try on a hard one: {p}")
+    root = find_root(p)
+    print(f"This is one of the root with multiplicity: f{root}")
+    print("Try to factor it out: ")
+    p = p.factor_out(root[0], poly=True, multiplicity=root[1])
+    print(p)
+    print("Try to solve it again: ")
+    root = find_root(p)
+    print(f"root = {root}")
 
+
+    print("try to find all roots at once: ")
+    p = Polynomial([1, -9, 33, -63, 66, -36, 8])
+    print(f"This is the polynomial: {p}")
+    print(find_roots(p))

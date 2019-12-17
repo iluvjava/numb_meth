@@ -123,21 +123,26 @@ class Polynomial:
         assert not(derv < 0 or derv > self._Deg), 'Derivative for Polynomial not Valid.'
         return derv_val(self._CoefficientsList, p, derv)[derv]
 
-    def factor_out(self, b: Number, poly: bool = False, remainder: bool = False, multiplicity: int=1):
+    def factor_out(self, b: Number, poly: bool = False, multiplicity: int=1):
         """
             return q(x) such that p(x) = q(x)(x - b) + R, where R is a constant.
         :param b:
         :param poly:
+            Where you want to get an instance of Polynomial to be returned.
         :param remainder:
         :return:
             (q(x)|[a_0, a_1, ...], R) if both is required
             q(x) or coefficents of q(x) depends on poly.
             R: The remainder if required.
         """
-        newCoefficients = val(self._CoefficientsList, b)
-        p = Polynomial(newCoefficients[:-1]) if poly else newCoefficients
-        if remainder:
-            return p, newCoefficients[-1]
+        assert multiplicity <= self._Deg and multiplicity > 0,\
+            "Cannot factor because multiplicity larger than max deg. "
+        newCoefficients = self._CoefficientsList
+        while multiplicity >= 1:
+            newCoefficients = val(newCoefficients, b)[:-1]
+            multiplicity -= 1
+
+        p = Polynomial(newCoefficients) if poly else newCoefficients
         return p
 
     def __repr__(self):
@@ -153,6 +158,13 @@ class Polynomial:
             return res
         return res[:-3]
 
+    def deg(self):
+        """
+
+        :return:
+            The degree of the polynomial.  
+        """
+        return self._Deg
 
 if __name__ == '__main__':
     p = Polynomial([1, 1, 1])
