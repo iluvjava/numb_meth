@@ -52,44 +52,6 @@ def derv_val(a: Vector, alpha: Number, depth: int=0) -> List[List[Number]]:
     return results
 
 
-def solve(p, x0:Number = None, TOL=1e-14, maxitr=1e2):
-    """
-        Given p(x) where p(x) is a polynomial, it try newton's iterations and solve for one of its real roots.
-
-    :return:
-        Map, root to its multiplicity.
-    """
-    x0 = random() if x0 is None else x0
-    def f(point):
-        res = p.eval_at(point, derv=1)
-        return point - res[0]/res[1]
-    return fixed_point_iteration(f, x0, TOL, maxitr)
-
-
-def fixed_point_iteration(g, x0: Number, TOL=1e-14, maxitr: int=20):
-    """
-    :param g:
-        The fixed point iteration function
-    :param x0:
-        The initial guess.
-    :param TOL:
-        The tolerance
-    :param maxitr:
-        The maximum number of iteration
-    :return:
-        None if not converging.
-    """
-    x1 = g(x0)
-    itr = 1
-
-    while abs(x1 - x0) > TOL and itr < maxitr:
-        x0 = x1
-        x1 = g(x1)
-        itr += 1
-        print(f"itr: {itr}; abs(x1 - x0) = {abs(x1 - x0)} exit? {not(abs(x1 - x0) > TOL and itr < maxitr)}")
-    return x1
-
-
 class Polynomial:
     """ 
       * Establish a polynomials with its coefficients of x in descending power.
@@ -133,7 +95,7 @@ class Polynomial:
         self._CoefficientsList = coefficients[I:]
         self._Deg = len(coefficients) - 1
 
-    def eval_at(self, p: Union[Number, Vector], derv: int = 0):
+    def eval_all(self, p: Union[Number, Vector], derv: int = 0):
         """
             returns the value evaluated at p, or a list of value.
         :param p: point or points that evaluate the function at.
@@ -156,6 +118,10 @@ class Polynomial:
             return val(self._CoefficientsList, p)[-1]
         # p is a single value and derv is more than 0
         return derv_val(self._CoefficientsList, p, derv)
+
+    def eval_at(self, p: Number, derv: int = 0):
+        assert not(derv < 0 or derv > self._Deg), 'Derivative for Polynomial not Valid.'
+        return derv_val(self._CoefficientsList, p, derv)[derv]
 
     def factor_out(self, b: Number, poly: bool, remainder: bool):
         """
@@ -191,36 +157,27 @@ class Polynomial:
 if __name__ == '__main__':
     p = Polynomial([1, 1, 1])
     print(p)
-    res = p.eval_at(1, derv=2)
+    res = p.eval_all(1, derv=2)
     print(res)
 
-    res = p.eval_at([x/100 for x in range(100)])
+    res = p.eval_all([x/100 for x in range(100)])
     print(res)
 
     p = Polynomial([1]*100) # should be 1/(1-x) for x in (-1, 1)
-    print(p.eval_at(-0.5))
+    print(p.eval_all(-0.5))
 
     p = Polynomial([1/x for x in range(100, 0, -1)] + [0]) # should be ln(1-x) for x in (-1, 1)
-    print(p.eval_at(-0.5, 3))
+    print(p.eval_all(-0.5, 3))
 
-    # p = Polynomial([1, 0, -2])
-    # print(solve(p))
-
-    p = Polynomial([1, 3, 3, 1])
-    print(solve(p, TOL=0, maxitr=1e10))
-
-    p = Polynomial([1, 3, 3, 1])
-    print(solve(p, TOL=-1, maxitr=1e2))
-
-    p = Polynomial([1, 3, 3, 1])
-    print(solve(p, x0 = 0.5 + (-1)**(0.5),TOL=-1, maxitr=1e2))
-
-    p = Polynomial([1, 4, 6, 4, 1])
-    print(solve(p, x0=0.5, TOL=0, maxitr=1e2))
 
     p = Polynomial([1, 2, 1])
     print("A thing about truncation error: ")
-    print(p.eval_at(-1 - 1e-13, derv=2))
+    print(p.eval_all(-1 - 1e-13, derv=2))
 
     print("Slow convergence and bad accuracy for repeated roots. ")
-
+    print("Testing Eval_at functionality: ")
+    p = Polynomial([1, 1, 1])
+    print(p)
+    print(f"Evaluating p''(1): {p.eval_at(1, derv=2)}")
+    print(f"Evaluating p'(1): {p.eval_at(1, derv=1)}")
+    print(f"Evaluating p(1): {p.eval_at(1)}")
