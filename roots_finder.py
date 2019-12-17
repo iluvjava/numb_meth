@@ -92,3 +92,13 @@ if __name__ == "__main__":
     p = Polynomial([1, -9, 33, -63, 66, -36, 8])
     print(f"This is the polynomial: {p}")
     print(find_roots(p))
+
+    print("try to find all roots at once: ")
+    p = Polynomial([1, 1, 1])
+    print(f"This is the polynomial: {p}")
+    print(find_roots(p))
+
+    print("try to find all roots at once: ")
+    p = Polynomial([1, 0, -2])
+    print(f"This is the polynomial: {p}")
+    print(find_roots(p))
