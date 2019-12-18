@@ -18,7 +18,6 @@ from typing import List, Union, Dict
 Number = Union[float, int, complex]
 Vector = List[Number]
 
-from random import random
 
 def val(a: Vector, alpha: Number) -> List[Number]:
     """

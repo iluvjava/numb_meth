@@ -6,7 +6,7 @@
         * Thank you, Sir Issac Newton, for torturing me through out my 4+ years of education, you are indeed a mastermind
         that is still controlling the world in your grave.
 """
-from core2 import *
+from core_modules.core2 import *
 from typing import Type
 Mypolynomial = Type[Polynomial]
 
