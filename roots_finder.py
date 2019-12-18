@@ -8,7 +8,6 @@ Basic idea:
     * Use Newton's method too look for the roots of the polynomials.
     * Use derivative to determine the repeated roots and them optimize it for accuracy.
 
-
 """
 
 from core2 import *
@@ -50,19 +49,50 @@ def find_root(p: MyPolynomial, x0: Number = None):
         k += 1
         continue
 
-    return None
+    return None # Not converging.
 
 
-def find_roots(p: MyPolynomial, results = None):
+def find_roots(p: MyPolynomial, results:Dict[Number, int] = None, precision:str = None):
+    """
+        Function find all the roots of the polynomials.
+    :param p:
+        The polynomials we want to solve.
+    :param results:
+        All the roots and it's corresponding multiplicity returned in a map.
+    :param precision:
+        The precision your want for your roots.
+        original is just None, "high" precision: 10e-10, "medium" precision 10e-6, "low" precision: 10-e-4
+    :return:
+        a map in the format of {root1: multiplicity, root2: multiplicity.......}
+    """
+    def roundup(root: Number, precision: str):
+        """
+            Round up the error according to the precision arguments.
+        :param root:
+            One of the roots
+        :return:
+            A rounded up version.
+        """
+        options = {"high": 10, "median": 6, "low": 4}
+        if precision is None:
+            return root
+        precision = precision.strip().lower()
+        rounded = complex(round(root.real, options[precision]), round(root.imag, options[precision]))
+        if rounded.real == 0 and rounded.imag == 0:
+            return 0
+        if rounded.real == 0:
+            return rounded.imag
+        if rounded.imag == 0:
+            return rounded.real
+        return rounded
+
     results = results if results is not None else {}
-
     if p.deg() == 0:
         return results
-
     root, multiplicity = find_root(p)
-    results[root] = multiplicity
+    results[roundup(root, precision)] = multiplicity
     p = p.factor_out(root, multiplicity=multiplicity, poly=True)
-    return find_roots(p, results)
+    return find_roots(p, results, precision)
 
 
 
@@ -102,3 +132,14 @@ if __name__ == "__main__":
     p = Polynomial([1, 0, -2])
     print(f"This is the polynomial: {p}")
     print(find_roots(p))
+
+    print("Try to find all roots with a precision parameters")
+    print(find_roots(p, precision="High"))
+
+    p = Polynomial({8:1, 0:-1})
+    print(f"Try to find the roots for: {p}")
+    print(find_roots(p, precision="high"))
+
+    p = Polynomial({20: 1, 0: -1})
+    print(f"Try to find the roots for: {p}")
+    print(find_roots(p, precision="high"))
