@@ -14,6 +14,9 @@ Things to learn:
     1. Learn about python typing.
         * Type hint doesn't work for type checking during runtime.
 """
+
+__all__ = ["Polynomial", "Number", "Vector"]
+
 from typing import List, Union, Dict
 Number = Union[float, int, complex]
 Vector = List[Number]
@@ -59,19 +62,19 @@ class Polynomial:
 
     def __init__(self, coefficients: Union[Dict[int, Number], List[Number]]):
         """
-        Constructor.
-        self._CoefficientsList:
-            [a_0, a_1, a_2... a_n]
+            Constructor.
+            self._CoefficientsList:
+                [a_0, a_1, a_2... a_n]
 
-        self._Deg:
-            The maximum power of x in the polynomial.
+            self._Deg:
+                The maximum power of x in the polynomial.
 
-        a_0 should not be zero! leading zeros will be trimmed.
-        :param coefficients:
-            * a map, maps the power of x to its coefficients
-            * a array, [a_0, a_1, a_2..., a_n]
-        :except
-            * A lot of exceptions
+            a_0 should not be zero! leading zeros will be trimmed.
+            :param coefficients:
+                * a map, maps the power of x to its coefficients
+                * a array, [a_0, a_1, a_2..., a_n]
+            :except
+                * A lot of exceptions
         """
         assert coefficients is not None, 'Coefficient list is None.'
         if type(coefficients) is dict:
@@ -96,15 +99,15 @@ class Polynomial:
 
     def eval_all(self, p: Union[Number, Vector], derv: int = 0):
         """
-            returns the value evaluated at p, or a list of value.
-        :param p: point or points that evaluate the function at.
-        :param derv: The depth of derivative for this polynomials you also want while evaluating it at p.
-        :return:
-            if derv = 0, then it will return the value of polynomial evaluated at a point or a list of points.
-            else
-                it will return a list of list where the first list is the 0th derivative, second list is the first.
-                etc
-            it will always return a list of numbers.
+                returns the value evaluated at p, or a list of value.
+            :param p: point or points that evaluate the function at.
+            :param derv: The depth of derivative for this polynomials you also want while evaluating it at p.
+            :return:
+                if derv = 0, then it will return the value of polynomial evaluated at a point or a list of points.
+                else
+                    it will return a list of list where the first list is the 0th derivative, second list is the first.
+                    etc
+                it will always return a list of numbers.
         """
         assert not derv < 0 or derv > self._Deg, 'Derivative for Polynomial not Valid.'
         res = []
@@ -124,15 +127,15 @@ class Polynomial:
 
     def factor_out(self, b: Number, poly: bool = False, multiplicity: int=1):
         """
-            return q(x) such that p(x) = q(x)(x - b) + R, where R is a constant.
-        :param b:
-        :param poly:
-            Where you want to get an instance of Polynomial to be returned.
-        :param remainder:
-        :return:
-            (q(x)|[a_0, a_1, ...], R) if both is required
-            q(x) or coefficents of q(x) depends on poly.
-            R: The remainder if required.
+                return q(x) such that p(x) = q(x)(x - b) + R, where R is a constant.
+            :param b:
+            :param poly:
+                Where you want to get an instance of Polynomial to be returned.
+            :param remainder:
+            :return:
+                (q(x)|[a_0, a_1, ...], R) if both is required
+                q(x) or coefficents of q(x) depends on poly.
+                R: The remainder if required.
         """
         assert multiplicity <= self._Deg and multiplicity > 0,\
             "Cannot factor because multiplicity larger than max deg. "
@@ -152,7 +155,6 @@ class Polynomial:
                 x_power = self._Deg - counter
                 res += '(' + str(I) + ')' + ('*x**' + str(x_power) if x_power != 0 else '') + ' + '
             counter += 1
-
         if res[-2] != '+':
             return res
         return res[:-3]
@@ -187,8 +189,10 @@ if __name__ == '__main__':
 
     print("Slow convergence and bad accuracy for repeated roots. ")
     print("Testing Eval_at functionality: ")
+
     p = Polynomial([1, 1, 1])
     print(p)
+
     print(f"Evaluating p''(1): {p.eval_at(1, derv=2)}")
     print(f"Evaluating p'(1): {p.eval_at(1, derv=1)}")
     print(f"Evaluating p(1): {p.eval_at(1)}")

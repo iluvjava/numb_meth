@@ -25,6 +25,4 @@ def newton_iter(poly: Mypolynomial, x0: Number, TOL, maxitr):
     :return:
         The endpoint it converges to.
     """
-
     pass
-

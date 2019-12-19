@@ -18,6 +18,8 @@ Problems:
 
 """
 
+__all__ = ["find_roots"]
+
 from core_modules.core2 import *
 from typing import Type, Dict
 from random import random
@@ -34,7 +36,7 @@ def find_root(p: MyPolynomial, x0: Number=None):
     """
     left, right = -1, 1
     x0 = complex((right - left)*random() - right, (right - left)*random() - right) if x0 is None else x0
-    TOL = 1e-10
+    TOL = 1e-14
     maxitr = 1e4
     k = 0
     # The kth derivative
