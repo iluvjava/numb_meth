@@ -9,7 +9,7 @@
 from core_modules.core2 import *
 from typing import Type
 Mypolynomial = Type[Polynomial]
-
+from core_modules.misc import *
 
 def newton_iter(poly: Mypolynomial, x0: Number, TOL, maxitr):
     """

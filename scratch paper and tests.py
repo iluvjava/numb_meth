@@ -10,6 +10,7 @@ Mypolynomial = Type[Polynomial]
 
 def main():
     test_root_finding_precision()
+    error_demo()
 
 
 def test_root_finding_precision():
@@ -43,6 +44,24 @@ def get_errors_for_poly(p: Polynomial):
     for r in roots.keys():
         errors.append(abs(p.eval_at(r)))
     return max(errors)
+
+def error_demo():
+    """
+        Method demonstrates the numerical accuracy problem for polynomials having a very high degree as its
+        leading coefficients.
+        * Test set up:
+            p(x) = x^3 + 3x^2 + 3x + 1
+            then using nested multiplication, eval at x = -1 + 1e-6
+            observe that: p(1e-6 - 1) = 0.0
+    :return:
+        Your mom, the fuck you actually read my comments?
+    """
+    p = Polynomial([1, 3, 3, 1])
+    print("Eval p(x) = x^3 + 3x^2 + 3x + 1 using nested multiplications. ")
+    x = 1e-6 - 1
+    print(f"at x = {x} then p(x) = {p.eval_at(x)}")
+    pass
+
 
 
 if __name__=="__main__":
