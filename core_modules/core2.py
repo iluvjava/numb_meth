@@ -25,13 +25,6 @@ Basic idea:
     * Use Newton's method too look for the roots of the polynomials.
     * Use derivative to determine the repeated roots and them optimize it for accuracy.
 
-------------------------------------------------------------------------------------------------------------------------
-Problems:
-------------------------------------------------------------------------------------------------------------------------
-    * false evaluation of the derivative of the fixed point iterative function
-      for polynomials with extremely large degree.
-      * could be solved by taking better guess for system that are very stiff around certain intervals, reasonable
-        polynomial can't be stiff over all the real numbers.
 
 """
 
@@ -118,6 +111,15 @@ class Polynomial:
         return derv_val(self._CoefficientsList, p, derv)
 
     def eval_at(self, p: Number, derv: int = 0):
+        """
+            Evaluate the polynomial or its derivative at that one point.
+        :param p:
+            The point you want to evaluate the polynomial.
+        :param derv:
+            The depth of derivative you want to evaluate the polynomial at.
+        :return:
+            p^{(k)}(p)
+        """
         assert not(derv < 0 or derv > self._Deg), 'Derivative for Polynomial not Valid.'
         return derv_val(self._CoefficientsList, p, derv)[derv]
 
@@ -185,10 +187,11 @@ MyPolynomial = Type[Polynomial]
 
 def val(a: Vector, alpha: Number) -> List[Number]:
     """
-    Nested Multiplication with coefficients of q(x) all returned.
+        Nested Multiplication with coefficients of q(x) all returned.
     :param a:
-    A is the indexed coefficients of
+        A is the indexed coefficients of
     :param alpha:
+        The value you want to evaluate the function at.
     :return:
     """
     assert not(a is None or len(a) == 0), 'Error'
@@ -213,6 +216,7 @@ def derv_val(a: Vector, alpha: Number, depth: int=0) -> List[List[Number]]:
         I += 1
         TaylorMultiplier *= I
     return results
+
 
 def find_root(p: MyPolynomial, x0: Number=None):
     """
@@ -326,7 +330,6 @@ if __name__ == '__main__':
 
     p = Polynomial([1/x for x in range(100, 0, -1)] + [0]) # should be ln(1-x) for x in (-1, 1)
     print(p.eval_all(-0.5, 3))
-
 
     p = Polynomial([1, 2, 1])
     print("A thing about truncation error: ")

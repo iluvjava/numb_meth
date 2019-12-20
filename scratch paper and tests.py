@@ -66,7 +66,7 @@ def error_demo():
     print(f"{find_roots(p)}")
     print("Using the high precision product evaluation, we have: ")
     print(f"at x = {x}; p(x) = {p.eval_alt(x)}")
-
+    print("Therefore, the eval_alt function has proven it's numerical superiority.")
     pass
 
 
