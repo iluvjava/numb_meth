@@ -20,7 +20,7 @@ def test_root_finding_precision():
     p = Polynomial({50: 1, 0: -20})
     e = get_errors_for_poly(p)
     print(f"The maximum value deviation from the function is: {e}")
-    p = Polynomial({300: 1, 0: -20})
+    p = Polynomial({100: 1, 0: -20})
     e = get_errors_for_poly(p)
     print(f"The maximum value deviation from the function is: {e}")
     pass
