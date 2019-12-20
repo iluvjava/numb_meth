@@ -8,7 +8,7 @@
     * It can store the pixel value for each of the pixel in the image.
 """
 
-from pypng import *
+from png import *
 
 class ComplexViewPort:
 
