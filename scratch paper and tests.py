@@ -45,7 +45,6 @@ def get_errors_for_poly(p: Polynomial):
     return max(errors)
 
 
-
 if __name__=="__main__":
     main()
 
