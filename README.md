@@ -14,11 +14,18 @@
     5. Keep tracks of the number of iterations too.  
  
 ## Problems: 
-    1. Slow convergence rate and bad accuracy for repeated roots 
-    from the polynomials. 
-        * Solution using the derivative of the fixed point iteration function 
-        near the region of the roots has been implemented. It's a lot of math
-        hence details won't be written here. 
+1. Slow convergence rate and bad accuracy for repeated roots 
+from the polynomials. 
+    * Solution using the derivative of the fixed point iteration function 
+    near the region of the roots has been implemented. It's a lot of math
+    hence details won't be written here. 
+2. Bad initial guess identifier is preventing the convergence of repeated roots. 
+    * Causes: 
+        * For repeated roots, derivative of p(x) is clse to zero, which is misidentified as a bad initial guess, causing the loop to reset the initial guess value. 
+    * solution: 
+        * ~~Changes the conditions for bad initial guess~~? 
+        * ~~Only test the very first guess intead of testing all guesses in the interation~~.
+        * Test at the end of the fixed point iteration, if p(x_final) is not small enough or x_final blown up, then try again with a new guess with a larger interval for the initial guess.  
         
         
 ## Potential Challenges: 

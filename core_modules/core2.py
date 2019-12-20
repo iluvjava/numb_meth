@@ -15,47 +15,39 @@ Things to learn:
         * Type hint doesn't work for type checking during runtime.
 """
 
-__all__ = ["Polynomial", "Number", "Vector"]
+"""
+    Given a polynomial, we find its roots and the corresponding geometric multiplicity, high precision
+
+------------------------------------------------------------------------------------------------------------------------
+Algorithm:
+------------------------------------------------------------------------------------------------------------------------
+Basic idea:
+    * Use Newton's method too look for the roots of the polynomials.
+    * Use derivative to determine the repeated roots and them optimize it for accuracy.
+
+------------------------------------------------------------------------------------------------------------------------
+Problems:
+------------------------------------------------------------------------------------------------------------------------
+    * false evaluation of the derivative of the fixed point iterative function
+      for polynomials with extremely large degree.
+      * could be solved by taking better guess for system that are very stiff around certain intervals, reasonable
+        polynomial can't be stiff over all the real numbers.
+
+"""
+
+__all__ = ["Polynomial", "Number", "Vector", "find_roots"]
 
 from typing import List, Union, Dict
 Number = Union[float, int, complex]
 Vector = List[Number]
 
-
-def val(a: Vector, alpha: Number) -> List[Number]:
-    """
-    Nested Multiplication with coefficients of q(x) all returned.
-    :param a:
-    A is the indexed coefficients of
-    :param alpha:
-    :return:
-    """
-    assert not(a is None or len(a) == 0), 'Error'
-    b = [a[0]]
-    i = 1
-    l = len(a)
-    while i < l:
-        b.append(alpha * b[i - 1] + a[i])
-        i += 1
-    return b
-
-
-def derv_val(a: Vector, alpha: Number, depth: int=0) -> List[List[Number]]:
-    assert a is not None or (len(a) == 0 or depth >= len(a) or depth < 0), 'Error'
-    I = 1
-    tbl = [val(a, alpha)]
-    results = [tbl[-1][-1]]
-    TaylorMultiplier = 1
-    while I <= depth:
-        tbl.append(val(tbl[-1][:-1], alpha))
-        results.append(tbl[-1][-1] * TaylorMultiplier)
-        I += 1
-        TaylorMultiplier *= I
-    return results
+from typing import Type, Dict
+from random import random
+from math import isnan
 
 
 class Polynomial:
-    """ 
+    """
       * Establish a polynomials with its coefficients of x in descending power.
       * Evaluate an array of array of values for the value of the polynomial at a point and its derivatives.
     """
@@ -77,6 +69,10 @@ class Polynomial:
                 * A lot of exceptions
         """
         assert coefficients is not None, 'Coefficient list is None.'
+        self.__Roots = None
+        self._CoefficientsList = None
+        self._Deg = None
+
         if type(coefficients) is dict:
             assert not len(coefficients.keys()) == 0, 'Coefficient list is empty.'
             lst = list(coefficients.keys())
@@ -88,7 +84,7 @@ class Polynomial:
 
             self._CoefficientsList = a
             self._Deg = pow_max
-            return
+            return # !!!
         assert type(coefficients) is list, 'Coefficients are not list of floats.'
         for I in range(len(coefficients)):
             if coefficients[I] != 0:
@@ -163,9 +159,158 @@ class Polynomial:
         """
 
         :return:
-            The degree of the polynomial.  
+            The degree of the polynomial.
         """
         return self._Deg
+
+    def eval_alt(self, x):
+        """
+            This is an alternative method for ill-conditioned polynomials.
+            Perform a high precision evaluations of the polynomial using the roots of the polynomials.
+        :param x
+            The value for evaluations.
+        :return:
+            The value of the polynomial evaluated at that point.
+        """
+        if self.__Roots is None:
+            self.__Roots = find_roots(self)
+        RunningProduct = 1
+        for r in self.__Roots.keys():
+            RunningProduct *= (x - r)**self.__Roots[r]
+        return RunningProduct
+
+
+MyPolynomial = Type[Polynomial]
+
+
+def val(a: Vector, alpha: Number) -> List[Number]:
+    """
+    Nested Multiplication with coefficients of q(x) all returned.
+    :param a:
+    A is the indexed coefficients of
+    :param alpha:
+    :return:
+    """
+    assert not(a is None or len(a) == 0), 'Error'
+    b = [a[0]]
+    i = 1
+    l = len(a)
+    while i < l:
+        b.append(alpha * b[i - 1] + a[i])
+        i += 1
+    return b
+
+
+def derv_val(a: Vector, alpha: Number, depth: int=0) -> List[List[Number]]:
+    assert a is not None or (len(a) == 0 or depth >= len(a) or depth < 0), 'Error'
+    I = 1
+    tbl = [val(a, alpha)]
+    results = [tbl[-1][-1]]
+    TaylorMultiplier = 1
+    while I <= depth:
+        tbl.append(val(tbl[-1][:-1], alpha))
+        results.append(tbl[-1][-1] * TaylorMultiplier)
+        I += 1
+        TaylorMultiplier *= I
+    return results
+
+def find_root(p: MyPolynomial, x0: Number=None):
+    """
+        Attempts to solve the polynomial at that point.
+    :param p:
+        The polynomial.
+    :return:
+        dict mappint the roots to it'ss multiplicity.
+    """
+    left, right = -1, 1
+    x0 = complex((right - left)*random() - right, (right - left)*random() - right) if x0 is None else x0
+    TOL = 1e-15
+    maxitr = 1e4
+    k = 0
+    # The kth derivative
+
+    while k + 1 <= p._Deg:
+        # define fixed point function
+        def g(point):
+            res = p.eval_all(point, derv=k + 1)
+            return point - (res[k] / res[k + 1])
+
+        # Start fixed point iteration with good and stable initial guess x0 for the kth iteration
+        x1 = g(x0)
+        itr = 0
+        while abs(x0 - x1) > TOL and itr < maxitr:
+            x0 = x1
+            x1 = g(x1)
+            itr += 1
+
+        # Blocks invalid solution and try again with a new guess, x0
+        if isnan(x1.real) or isnan(x1.imag) or abs(p.eval_at(x1)) > 1e-4:
+            left *= 2
+            right *= 2
+            x0 = complex((right - left)*random() - right, (right - left)*random() - right)
+            continue
+
+        # assert abs(p.eval_at(x1)) < 1e-4, f"Grave Error omg. x1 = {x1}, maxitr reached? :{itr == maxitr}"
+
+        # Checking the fixed point function result for repeated roots.
+        dgdx = (g(x1 + 1e-8) - g(x1))/1e-8
+        if abs(dgdx) < 1e-2:
+            return x1, k + 1 # Root attained.
+        k += 1
+        continue
+
+    return None # Not converging.
+
+
+def find_roots(p: MyPolynomial, results: Dict[Number, int] = None, precision:str = None):
+    """
+        Function find all the roots of the polynomials, runtime of the method is not bounded because of the
+        stochastic process involved.
+    :param p:
+        The polynomials we want to solve.
+    :param results:
+        All the roots and it's corresponding multiplicity returned in a map.
+    :param precision:
+        The precision your want for your roots.
+        original is just None, "high" precision: 10e-10, "medium" precision 10e-6, "low" precision: 10-e-4
+    :return:
+        a map in the format of {root1: multiplicity, root2: multiplicity.......}
+    """
+
+    if p.deg() > 20 and results is None:
+        print("\033[93m" + "[Warning]: Polynomial has a degree higher than 20, root finding algorithm might fail "
+              "due to stiffness at the point near first guess or other reasons." + "\033[0m")
+
+    def roundup(root: Number, precision: str):
+        """
+            Round up the error according to the precision arguments.
+        :param root:
+            One of the roots
+        :return:
+            A rounded up version.
+        """
+        options = {"high": 10, "median": 6, "low": 4}
+        if precision is None:
+            return root
+        precision = precision.strip().lower()
+        rounded = complex(round(root.real, options[precision]), round(root.imag, options[precision]))
+        if rounded.real == 0 and rounded.imag == 0:
+            return 0
+        if rounded.real == 0:
+            return rounded.imag
+        if rounded.imag == 0:
+            return rounded.real
+        return rounded
+
+    results = results if results is not None else {}
+    if p.deg() == 0:
+        return results
+    root, multiplicity = find_root(p)
+    results[roundup(root, precision)] = multiplicity
+    p = p.factor_out(root, multiplicity=multiplicity, poly=True)
+    return find_roots(p, results, precision)
+
+
 
 if __name__ == '__main__':
     p = Polynomial([1, 1, 1])
@@ -196,3 +341,15 @@ if __name__ == '__main__':
     print(f"Evaluating p''(1): {p.eval_at(1, derv=2)}")
     print(f"Evaluating p'(1): {p.eval_at(1, derv=1)}")
     print(f"Evaluating p(1): {p.eval_at(1)}")
+
+    p = Polynomial({50: 1, 0: -1})
+    print(f"Try to find the roots for: {p}")
+    print(find_roots(p, precision="high"))
+
+    p = Polynomial({100: 1, 0: -1})
+    print(f"Try to find the roots for: {p}")
+    print(find_roots(p, precision="high"))
+
+    p = Polynomial([1, 3, 3, 1])
+    print(f"Try to rind the roots for {p}")
+    print(find_roots(p))

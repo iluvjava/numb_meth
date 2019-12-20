@@ -26,7 +26,7 @@ def test_root_finding_precision():
     pass
 
 
-def get_errors_for_poly(p: Polynomial):
+def get_errors_for_poly(p: Mypolynomial):
     """
     Given any polynomial, it will run the solve for the polynomial and then solve, then it will substitute the roots
     back to the polynomial and return a list of errors for the polynomials.
@@ -37,7 +37,7 @@ def get_errors_for_poly(p: Polynomial):
     :return:
         A list of error for each of the roots.
     """
-    p = Polynomial({20: 1, 0: -1})
+    p
     roots = find_roots(p)
     assert sum(roots.values()) == p.deg(), "Sum of multiplicity doesn't match the maximum degree of the polynomials."
     errors = []
@@ -60,6 +60,13 @@ def error_demo():
     print("Eval p(x) = x^3 + 3x^2 + 3x + 1 using nested multiplications. ")
     x = 1e-6 - 1
     print(f"at x = {x} then p(x) = {p.eval_at(x)}")
+    print("However if given the roots of the polynomials, we can use the product and root's multiplicity for fast"
+          "evaluation.")
+    print("Roots: ")
+    print(f"{find_roots(p)}")
+    print("Using the high precision product evaluation, we have: ")
+    print(f"at x = {x}; p(x) = {p.eval_alt(x)}")
+
     pass
 
 
