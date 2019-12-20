@@ -25,4 +25,14 @@ def newton_iter(poly: Mypolynomial, x0: Number, TOL, maxitr):
     :return:
         The endpoint it converges to.
     """
+
+    pass
+
+def general_fixpoint_itr(g, relTol = 1e-10, maxitr = 200):
+    """
+        Given a function, it performs a general type of fixed point iteration.
+    :return:
+        The final value and a flag.
+    """
+    flag = None
     pass

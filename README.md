@@ -1,5 +1,5 @@
 ## Project Description
-    
+    Using Newton's iteration to create newton's fractrals. 
 ## Dependencies
 - [PyPng](https://github.com/drj11/pypng)
  
@@ -22,9 +22,16 @@
         
         
 ## Potential Challenges: 
-    1. Smooth graphics of the fractals can be very hard to attain, but here are some potential solutions: 
-        * Random sampling and Monte Carlo Algorithms for fractals evalutions
-        * Post processing of the images using some python modules. 
-    2. Repeating roots and roots that are very close to each other numerically. 
-        * Repeating roots sometimes are badly conditioned, causing Newton's method to converge to value that are slightly off from the roots founded from the roots finder. 
-        * Roots very close to each other will create a very strict identifying conditions for knowing which root our initial guess converges to. 
+1. **Smooth graphics of the fractals can be very hard to attain, Potential solution**
+    * Random sampling and Monte Carlo Algorithms for fractals evalutions
+    * Post processing of the images using some python modules. 
+2. **Repeating roots and roots that are very close to each other numerically**
+    * Repeating roots sometimes are badly conditioned, causing Newton's method to converge to value that are slightly off from the roots founded from the roots finder. 
+    * Roots very close to each other will create a very strict identifying conditions for knowing which root our initial guess converges to. 
+3. **Truncation Errors in polynomial evaluation** 
+    * Ill-conditioned polynomial might have error up to 1e-2 due to high degree of power, this is especially true for polynomials in the form of p(x) = (x - a)^n q(x) where n is larger than 10. This will create problem when identifying the 
+    roots. 
+        
+## Other stuff
+    * Why the fuck I cannot use my python virtual environment on my freaking desktop?!
+    - 
