@@ -198,8 +198,13 @@ class Polynomial:
 
     def get_roots(self, active=True):
         """
-            Get all the original roots for this polynomial.
-
+            Get all the original roots for this polynomial using the modified Newton
+            Raphson method.
+        :param: active
+            when active is set to true, it won't store the value from the previous solve
+            and return it for the future.
+            When active is set to false, it will return the roots from previous solve if
+            it has been already calculated.
         :return:
             A map, with complex roots as key and the multiplicity as the value.
         """

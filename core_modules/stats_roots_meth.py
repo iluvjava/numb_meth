@@ -1,6 +1,20 @@
 """
     This file is concerned with storing the roots from the root finding algorithm, it should assist with the
     root precision for the polynomial evaluation.
+
+    It's a naive solution for the problem
+
+------------------------------------------------------------------------------------------------------------------------
+What are we collecting?
+------------------------------------------------------------------------------------------------------------------------
+    1. We need all the roots obtained from multiple solves of the same polynomial.
+    2. We will use then to compute the best estimated roots using basic statistics.
+
+------------------------------------------------------------------------------------------------------------------------
+What to keep in mind
+------------------------------------------------------------------------------------------------------------------------
+    1. There is going to he another script that refers to this script and the polynomial script that handles
+    most of the thing about solving.
 """
 
 from core_modules.core2 import *
@@ -14,12 +28,13 @@ class RootsStore:
 
         Format of storing the roots.
         [(complex1, multiplicity, [complex2, complex3...]).....]
+
     """
 
     def __init__(self, First_Roots: Dict[Number, int]):
         self.__RootsContainer = []
         for k in First_Roots.keys():
-            self.__RootsContainer.append((k, First_Roots[k], []))
+            self.__RootsContainer.append((k, First_Roots[k], [k]))
 
 
     def __add_new_root(self, Root: complex, Multiplicity: int):
@@ -60,7 +75,6 @@ class RootsStore:
 
     def get_stat(self):
         """
-
         :return:
             The internal structure of the data stored.
         """
@@ -70,9 +84,32 @@ class RootsStore:
         """
             The results is the aggregated roots from running the roots finding repeatedly.
         :return:
+            A map, with roots as the key and the value as its multiplicity.
         """
+        results = map()
+        for r, mul, arr in self.__RootsContainer:
+            results[sum(arr)/len(arr)] = mul
+        return results
 
+
+
+class ExtremeSolver:
+    """
+        This class will take the solving scheme to absolute extreme and at the same time, having a more stable, simple
+        API methods that easy to use and understand.
+
+        The extreme solve will do the following:
+            1. Produce the most accurate roots from multiple solving.
+            2. Produce an upper bound and a lower bound for the roots.
+
+    """
+    def __init__(self):
         pass
+
+
+
+
+
 
 if __name__ == "__main__":
     print("Ok we are going to run some tests here. ")
