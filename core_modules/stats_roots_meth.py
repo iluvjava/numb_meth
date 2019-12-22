@@ -47,18 +47,38 @@ class RootsStore:
         return
 
     def add_roots(self, Roots: Dict[Number, int]):
+        """
+
+        :param Roots:
+            A set of roots returned by the get_roots method in the polynomial
+        :return:
+            None.
+        """
         for k in Roots.keys():
             self.__add_new_root(k, Roots[k])
-        pass
+        return
 
     def get_stat(self):
+        """
+
+        :return:
+            The internal structure of the data stored.
+        """
         return self.__RootsContainer
+
+    def get_results(self):
+        """
+            The results is the aggregated roots from running the roots finding repeatedly.
+        :return:
+        """
+
+        pass
 
 if __name__ == "__main__":
     print("Ok we are going to run some tests here. ")
     p = Polynomial([1, 1, 1, 1])
     roots = p.get_roots()
     rs = RootsStore(roots)
-
-    rs.add_roots(p.get_roots())
+    for I in range(3):
+        rs.add_roots(p.get_roots())
     print(rs.get_stat())
