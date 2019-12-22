@@ -11,6 +11,7 @@ Mypolynomial = Type[Polynomial]
 def main():
     test_root_finding_precision()
     error_demo()
+    test_analytical_deriv(Polynomial([1 ,1, 1, 1]))
 
 
 def test_root_finding_precision():
@@ -21,6 +22,9 @@ def test_root_finding_precision():
     e = get_errors_for_poly(p)
     print(f"The maximum value deviation from the function is: {e}")
     p = Polynomial({100: 1, 0: -20})
+    e = get_errors_for_poly(p)
+    print(f"The maximum value deviation from the function is: {e}")
+    p = Polynomial({200: 1, 0: -20})
     e = get_errors_for_poly(p)
     print(f"The maximum value deviation from the function is: {e}")
     pass
@@ -37,7 +41,6 @@ def get_errors_for_poly(p: Mypolynomial):
     :return:
         A list of error for each of the roots.
     """
-    p
     roots = find_roots(p)
     assert sum(roots.values()) == p.deg(), "Sum of multiplicity doesn't match the maximum degree of the polynomials."
     errors = []
@@ -70,6 +73,13 @@ def error_demo():
     pass
 
 
+def test_analytical_deriv(p):
+    """
+        Function will test the analytical approach to taking the derivative of the polynomial.
+    :return:
+    """
+    print(p.derv_analytical())
+    pass
 
 if __name__=="__main__":
     main()

@@ -181,6 +181,33 @@ class Polynomial:
             RunningProduct *= (x - r)**self.__Roots[r]
         return RunningProduct
 
+    def derv_analytical(self, poly=False):
+        """
+            This function produce the coefficients for the derivative polynomial.
+        :param: poly
+            Set it to True if you want the function to return an instance of polynomial, False if
+            you only want an array of coefficients of the polynomial.
+        :return:
+            An array representing all coefficients of the returned polynomials, or
+            an new instance of a polynomials.
+        """
+        New_Coefficients = []
+        for I in range(len(self._CoefficientsList) - 1):
+            New_Coefficients.append(self._CoefficientsList[I]*(self._Deg - I));
+        return New_Coefficients
+
+    def get_roots(self, active=True):
+        """
+            Get all the original roots for this polynomial.
+
+        :return:
+            A map, with complex roots as key and the multiplicity as the value.
+        """
+        if self.__Roots is not None and not active:
+            return self.__Roots
+        self.__Roots = find_roots(self)
+        return self.__Roots
+
 
 MyPolynomial = Type[Polynomial]
 
