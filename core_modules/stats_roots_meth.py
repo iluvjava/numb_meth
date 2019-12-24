@@ -29,26 +29,32 @@ class RootsStore:
         Format of storing the roots.
         [(complex1, multiplicity, [complex2, complex3...]).....]
 
+        Formats of storing the results:
+        [[root1, root1, root1...], [root2, root2, root2...]... ]
+
     """
 
     def __init__(self, First_Roots: Dict[Number, int]):
         self.__RootsContainer = []
+        self.__AllRoots = []
         for k in First_Roots.keys():
             self.__RootsContainer.append((k, First_Roots[k], [k]))
+            self.__AllRoots.append([k])
 
 
-    def __add_new_root(self, Root: complex, Multiplicity: int):
+
+    def __get_index(self, Root: complex, Multiplicity: int):
         """
             Function attempts to add the new found root to the closest roots it can find from the first established
             set of roots.
-
         :param Root:
             A root that is found from future iterations.
         :param Multiplicity:
             The multiplicity of the root
         :return:
-            None.
+            The index of the root being inserted into the list of roots.
         """
+
         I = 0
         index = 0
         dis = abs(Root - self.__RootsContainer[0][0])
@@ -58,19 +64,32 @@ class RootsStore:
                 dis = new_Distance
                 index = I
             I += 1
-        self.__RootsContainer[index][2].append(Root)
-        return
+        return index
 
     def add_roots(self, Roots: Dict[Number, int]):
         """
-
+            The method is going to test thing through first, so if there is something wrong with the roots,
+            the stats won't be polluted.
         :param Roots:
             A set of roots returned by the get_roots method in the polynomial
         :return:
             None.
         """
+        Indices = set()
+        Index_List = []
+        Roots_List = []
         for k in Roots.keys():
-            self.__add_new_root(k, Roots[k])
+            I = self.__get_index(k, Roots[k])
+            if I in Indices:
+                assert True, "2 or mores roots added to the same root upon subsequent solving. "
+            Indices.add(I)
+            Index_List.append(I); Roots_List.append(k)
+
+        ## No errors, let's add the roots in.
+
+        for I in Index_List:
+            self.__RootsContainer[I][2].append(Roots_List[I])
+            self.__AllRoots[I].append(Roots_List[I])
         return
 
     def get_stat(self):
@@ -84,12 +103,9 @@ class RootsStore:
         """
             The results is the aggregated roots from running the roots finding repeatedly.
         :return:
-            A map, with roots as the key and the value as its multiplicity.
+            An list of array, where each array is the same roots produced from multiple roots finding scheme.
         """
-        results = map()
-        for r, mul, arr in self.__RootsContainer:
-            results[sum(arr)/len(arr)] = mul
-        return results
+        return self.__AllRoots
 
 
 
@@ -101,10 +117,13 @@ class ExtremeSolver:
         The extreme solve will do the following:
             1. Produce the most accurate roots from multiple solving.
             2. Produce an upper bound and a lower bound for the roots.
-
     """
-    def __init__(self):
-        
+    def __init__(self, p: MyPolynomial):
+        """
+        :param p:
+            An instance of the polynomial class.
+        """
+
         pass
 
 
@@ -120,3 +139,4 @@ if __name__ == "__main__":
     for I in range(3):
         rs.add_roots(p.get_roots())
     print(rs.get_stat())
+    print(rs.get_results())
