@@ -26,12 +26,14 @@ class RootsStore:
     """
         This class will be a naive way of storing the roots obtained from the stochastic process.
 
-        Format of storing the roots.
+        Format of storing the roots info
         [(complex1, multiplicity, [complex2, complex3...]).....]
 
-        Formats of storing the results:
+        Formats of storing the roots:
         [[root1, root1, root1...], [root2, root2, root2...]... ]
 
+        format of storing the statistics.
+        [[root1_sum, root1_squared_sum], [root2_sum, root2_squared_sum], ...]
     """
 
     def __init__(self, First_Roots: Dict[Number, int]):
