@@ -26,11 +26,20 @@ class RootsStore:
     """
         This class will be a naive way of storing the roots obtained from the stochastic process.
 
-        Format of storing the roots.
-        [(complex1, multiplicity, [complex2, complex3...]).....]
+        Format of storing the roots in
+            These info is obtained upon first solve and it will be used to organize roots upon subsequent solving.
+        __RootsContainer:
+            [(complex1, multiplicity, [complex2, complex3...]).....]
 
         Formats of storing the results:
-        [[root1, root1, root1...], [root2, root2, root2...]... ]
+            ???! These results might not be neccessary at all.
+        __AllRoots:
+            [[root1, root1, root1...], [root2, root2, root2...]... ]
+
+        Formats of stroing the relavent info for stats
+            These stats are for calculating stuff easily
+        __RootsSats:
+            [[root1_sum, root1_squared_sum, root1_count], [root2_sum, root2_squared_sum, root2_count], ...]
 
     """
 
@@ -54,7 +63,6 @@ class RootsStore:
         :return:
             The index of the root being inserted into the list of roots.
         """
-
         I = 0
         index = 0
         dis = abs(Root - self.__RootsContainer[0][0])
@@ -81,7 +89,7 @@ class RootsStore:
         for k in Roots.keys():
             I = self.__get_index(k, Roots[k])
             if I in Indices:
-                assert True, "2 or mores roots added to the same root upon subsequent solving. "
+                assert True, "2 or mores roots merge to the same root upon subsequent solving. "
             Indices.add(I)
             Index_List.append(I); Roots_List.append(k)
 
@@ -101,7 +109,7 @@ class RootsStore:
 
     def get_results(self):
         """
-            The results is the aggregated roots from running the roots finding repeatedly.
+            The result is the aggregated roots from running the roots finding repeatedly.
         :return:
             An list of array, where each array is the same roots produced from multiple roots finding scheme.
         """
@@ -120,6 +128,7 @@ class ExtremeSolver:
     """
     def __init__(self, p: MyPolynomial):
         """
+            initiate the extreme solver with an instance of the polynomial.
         :param p:
             An instance of the polynomial class.
         """
