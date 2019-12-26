@@ -46,9 +46,11 @@ class RootsStore:
     def __init__(self, First_Roots: Dict[Number, int]):
         self.__RootsContainer = []
         self.__AllRoots = []
+        self.__RootsStats = []
         for k in First_Roots.keys():
             self.__RootsContainer.append((k, First_Roots[k], [k]))
             self.__AllRoots.append([k])
+            self.__RootsStats.append([k, k**2, 1])
 
 
 
@@ -83,9 +85,9 @@ class RootsStore:
         :return:
             None.
         """
-        Indices = set()
-        Index_List = []
-        Roots_List = []
+        Indices = set() # A set of unique index that the root upon subsequent solve should be inserted.
+        Index_List = [] # A list of index where each root in the corresponding position in "Roots" should be added to
+        Roots_List = [] # The list of roots extracted from iterating through "Roots".
         for k in Roots.keys():
             I = self.__get_index(k, Roots[k])
             if I in Indices:
@@ -93,18 +95,26 @@ class RootsStore:
             Indices.add(I)
             Index_List.append(I); Roots_List.append(k)
 
-        ## No errors, let's add the roots in.
+        ## No errors, let's add the information in.
 
         for I in Index_List:
             self.__RootsContainer[I][2].append(Roots_List[I])
             self.__AllRoots[I].append(Roots_List[I])
+            self.__RootsStats[I][0] += Roots_List[I]
+            self.__RootsStats[I][1] += Roots_List[I]**2
+            self.__RootsStats[I][2] += 1
         return
 
     def get_stat(self):
         """
+            Produce statistics about each of the roots from the intermediate data maintained.
         :return:
-            The internal structure of the data stored.
+            a list of info about each of the found root, it's presented in the following format:
+            [
+                [root1_average, root1_sd, root1_sd]
+            ]
         """
+
         return self.__RootsContainer
 
     def get_results(self):
