@@ -32,14 +32,14 @@ class RootsStore:
             [(complex1, multiplicity, [complex2, complex3...]).....]
 
         Formats of storing the results:
-            ???! These results might not be neccessary at all.
+            ???! These results might not be necessary at all.
         __AllRoots:
             [[root1, root1, root1...], [root2, root2, root2...]... ]
 
-        Formats of stroing the relavent info for stats
-            These stats are for calculating stuff easily
-        __RootsSats:
-            [[root1_sum, root1_squared_sum, root1_count], [root2_sum, root2_squared_sum, root2_count], ...]
+        Formats of storing the relevant info for stats
+            Important intermediate results for computing the complex variance of the complex random variable.
+        __RootsStats:
+            [[root1_sum, root1_squared_abs_sum, root1_count], [root2_sum, root2_squared_abs_sum, root2_count], ...]
 
     """
 
@@ -50,7 +50,7 @@ class RootsStore:
         for k in First_Roots.keys():
             self.__RootsContainer.append((k, First_Roots[k], [k]))
             self.__AllRoots.append([k])
-            self.__RootsStats.append([k, k**2, 1])
+            self.__RootsStats.append((k, abs(k)**2, 1))
 
 
 
@@ -102,7 +102,7 @@ class RootsStore:
             self.__RootsContainer[I][2].append(Roots_List[I])
             self.__AllRoots[I].append(Roots_List[I])
             self.__RootsStats[I][0] += Roots_List[I]
-            self.__RootsStats[I][1] += Roots_List[I]**2
+            self.__RootsStats[I][1] += abs(Roots_List[I])**2
             self.__RootsStats[I][2] += 1
         return
 
@@ -115,14 +115,19 @@ class RootsStore:
                 [root1_average, root1_sd, root1_sd]
             ]
         """
+        stats = []
 
-        return self.__RootsContainer
+        for r, AbsSquareSum, count in self.__RootsStats:
+            pass
+
+        return
 
     def get_results(self):
         """
             The result is the aggregated roots from running the roots finding repeatedly.
         :return:
-            An list of array, where each array is the same roots produced from multiple roots finding scheme.
+            An list of array, it will have the following format:
+
         """
         return self.__AllRoots
 
