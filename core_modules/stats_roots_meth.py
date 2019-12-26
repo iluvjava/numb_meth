@@ -26,22 +26,31 @@ class RootsStore:
     """
         This class will be a naive way of storing the roots obtained from the stochastic process.
 
-        Format of storing the roots info
-        [(complex1, multiplicity, [complex2, complex3...]).....]
+        Format of storing the roots in
+            These info is obtained upon first solve and it will be used to organize roots upon subsequent solving.
+        __RootsContainer:
+            [(complex1, multiplicity, [complex2, complex3...]).....]
 
-        Formats of storing the roots:
-        [[root1, root1, root1...], [root2, root2, root2...]... ]
+        Formats of storing the results:
+            ???! These results might not be neccessary at all.
+        __AllRoots:
+            [[root1, root1, root1...], [root2, root2, root2...]... ]
 
-        format of storing the statistics.
-        [[root1_sum, root1_squared_sum], [root2_sum, root2_squared_sum], ...]
+        Formats of stroing the relavent info for stats
+            These stats are for calculating stuff easily
+        __RootsSats:
+            [[root1_sum, root1_squared_sum, root1_count], [root2_sum, root2_squared_sum, root2_count], ...]
+
     """
 
     def __init__(self, First_Roots: Dict[Number, int]):
         self.__RootsContainer = []
         self.__AllRoots = []
+        self.__RootsStats = []
         for k in First_Roots.keys():
             self.__RootsContainer.append((k, First_Roots[k], [k]))
             self.__AllRoots.append([k])
+            self.__RootsStats.append([k, k**2, 1])
 
 
 
@@ -77,33 +86,41 @@ class RootsStore:
         :return:
             None.
         """
-        Indices = set()
-        Index_List = []
-        Roots_List = []
+        Indices = set() # A set of unique index that the root upon subsequent solve should be inserted.
+        Index_List = [] # A list of index where each root in the corresponding position in "Roots" should be added to
+        Roots_List = [] # The list of roots extracted from iterating through "Roots".
         for k in Roots.keys():
             I = self.__get_index(k, Roots[k])
             if I in Indices:
-                assert True, "2 or mores roots added to the same root upon subsequent solving. "
+                assert True, "2 or mores roots merge to the same root upon subsequent solving. "
             Indices.add(I)
             Index_List.append(I); Roots_List.append(k)
 
-        ## No errors, let's add the roots in.
+        ## No errors, let's add the information in.
 
         for I in Index_List:
             self.__RootsContainer[I][2].append(Roots_List[I])
             self.__AllRoots[I].append(Roots_List[I])
+            self.__RootsStats[I][0] += Roots_List[I]
+            self.__RootsStats[I][1] += Roots_List[I]**2
+            self.__RootsStats[I][2] += 1
         return
 
     def get_stat(self):
         """
+            Produce statistics about each of the roots from the intermediate data maintained.
         :return:
-            The internal structure of the data stored.
+            a list of info about each of the found root, it's presented in the following format:
+            [
+                [root1_average, root1_sd, root1_sd]
+            ]
         """
+
         return self.__RootsContainer
 
     def get_results(self):
         """
-            The results is the aggregated roots from running the roots finding repeatedly.
+            The result is the aggregated roots from running the roots finding repeatedly.
         :return:
             An list of array, where each array is the same roots produced from multiple roots finding scheme.
         """
@@ -122,6 +139,7 @@ class ExtremeSolver:
     """
     def __init__(self, p: MyPolynomial):
         """
+            initiate the extreme solver with an instance of the polynomial.
         :param p:
             An instance of the polynomial class.
         """
