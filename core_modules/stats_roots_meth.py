@@ -15,6 +15,15 @@ What to keep in mind
 ------------------------------------------------------------------------------------------------------------------------
     1. There is going to he another script that refers to this script and the polynomial script that handles
     most of the thing about solving.
+
+------------------------------------------------------------------------------------------------------------------------
+What does it do?
+------------------------------------------------------------------------------------------------------------------------
+    * Construct an instance of RootsStore with an intial set of roots that are obtained upon first solving the
+    polynomial.
+    * Using the add_roots method to add set of roots obtained from subsequent solving.
+    * Using the get_stats method to obtain statistics from the roots finding method, which will increase the precision
+    of the roots, while also obtaining the range where the accurate roots are likely to be located at.
 """
 
 from core_modules.core2 import *
@@ -109,14 +118,15 @@ class RootsStore:
     def get_stat(self):
         """
             Produce statistics about each of the roots from the intermediate data maintained.
+            the formula for computing the variance of complex random variable is:
+            E[|X|^2] - E[|X|]^2
         :return:
             a list of info about each of the found root, it's presented in the following format:
             [
-                [root1_average, root1_sd, root1_sd]
+                [root1_average, root1_sd]
             ]
         """
         stats = []
-
         for r, AbsSquareSum, count in self.__RootsStats:
             pass
 
