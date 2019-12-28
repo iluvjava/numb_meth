@@ -48,20 +48,22 @@ class RootsStore:
         Formats of storing the relevant info for stats
             Important intermediate results for computing the complex variance of the complex random variable.
         __RootsStats:
-            [[root1_sum, root1_squared_abs_sum], [root2_sum, root2_squared_abs_sum], ...]
-
+            [   [sum(x1), sum(x2), ...],
+                [sum(|x1|^2), sum(|x2|^2), ...],
+                [sum(|x1|), sum(|x2|), ...]
+            ]
     """
-
     def __init__(self, First_Roots: Dict[Number, int]):
         self.__RootsContainer = []
         self.__AllRoots = []
-        self.__RootsStats = []
+        self.__RootsStats = [[], [], []]
         self.__SolveCount = 1
         for k in First_Roots.keys():
             self.__RootsContainer.append((k, First_Roots[k], [k]))
             self.__AllRoots.append([k])
-            self.__RootsStats.append((k, abs(k)**2))
-
+            self.__RootsStats[0].append(k)
+            self.__RootsStats[1].append(abs(k)**2)
+            self.__RootsStats[2].append(abs(k))
 
     def __get_index(self, Root: complex, Multiplicity: int):
         """
@@ -79,7 +81,7 @@ class RootsStore:
         dis = abs(Root - self.__RootsContainer[0][0])
         for r, mul, arr in self.__RootsContainer:
             new_Distance = abs(Root - r)
-            if new_Distance < dis and Multiplicity == self.__RootsContainer[I][1]:
+            if new_Distance < dis and Multiplicity == mul:
                 dis = new_Distance
                 index = I
             I += 1
@@ -94,25 +96,30 @@ class RootsStore:
         :return:
             None.
         """
-        Indices = set() # A set of unique index that the root upon subsequent solve should be inserted.
-        Index_List = [] # A list of index where each root in the corresponding position in "Roots" should be added to
-        Roots_List = [] # The list of roots extracted from iterating through "Roots".
+        Indices = set()  # A set of unique index that the root upon subsequent solve should be inserted.
+        Index_List = []  # A list of index where each root in the corresponding position in "Roots" should be added to
+        Roots_List = []  # The list of roots extracted from iterating through "Roots".
         for k in Roots.keys():
             I = self.__get_index(k, Roots[k])
             if I in Indices:
-                assert True, "2 or mores roots merge to the same root upon subsequent solving. "
+                assert True, "2 or mores roots merge to the same root upon subsequent solving."
             Indices.add(I)
-            Index_List.append(I); Roots_List.append(k)
+            Index_List.append(I)
+            Roots_List.append(k)
 
         ## No errors, let's add the information in.
 
-        for I in Index_List:
-            self.__RootsContainer[I][2].append(Roots_List[I])
-            self.__AllRoots[I].append(Roots_List[I])
-            t = (Roots_List[I] + self.__RootsStats[I][0], self.__RootsStats[I][1] + abs(Roots_List[I]**2))
-            self.__RootsStats[I] = t
+        for I, The_Root in zip(Index_List, Roots_List):
+            self.__RootsContainer[I][2].append(The_Root)
+            self.__AllRoots[I].append(The_Root)
+            self.__RootsStats[0][I] += The_Root
+            self.__RootsStats[1][I] += abs(The_Root)**2
+            self.__RootsStats[2][I] += abs(The_Root)
         self.__SolveCount += 1
         return
+
+    def get_roots_info(self):
+        return self.__RootsContainer
 
     def get_stat(self):
         """
@@ -122,23 +129,24 @@ class RootsStore:
         :return:
             a list of info about each of the found root, it's presented in the following format:
             [
-                [root1_average, root1_sd]
+                (root1_average, root1_sd)
             ]
         """
         stats = []
-        for RootsSum, AbsSquareSum in self.__RootsStats:
-            t = (AbsSquareSum/self.__SolveCount, (abs(RootsSum)/self.__SolveCount)**2)
-            pass
-
-        return
+        for sum, absSquareSum, absSum, in zip(self.__RootsStats[0], self.__RootsStats[1], self.__RootsStats[2]):
+            E_x = sum/self.__SolveCount
+            E_abs_x2 = absSquareSum/self.__SolveCount
+            E_abs_x = absSum/self.__SolveCount
+            stats.append((E_x, E_abs_x2 - E_abs_x**2))
+        return stats
 
     def get_results(self):
         """
             The result is the aggregated roots from running the roots finding repeatedly.
         :return:
             An list of array, it will have the following format:
-
         """
+
         return self.__AllRoots
 
 
@@ -152,26 +160,28 @@ class ExtremeSolver:
             1. Produce the most accurate roots from multiple solving.
             2. Produce an upper bound and a lower bound for the roots.
     """
-    def __init__(self, p: MyPolynomial):
+    def __init__(self, p: MyPolynomial, Repetition: int):
         """
             initiate the extreme solver with an instance of the polynomial.
         :param p:
             An instance of the polynomial class.
+        :param Repetition:
+            How many time you want to repeatedly solve the polynomial?
         """
-
+        self.__P = p
+        self.__Repetition = Repetition
         pass
-
-
-
 
 
 
 if __name__ == "__main__":
     print("Ok we are going to run some tests here. ")
-    p = Polynomial([1, 1, 1, 1])
+    p = Polynomial({100:1, 0:1})
     roots = p.get_roots()
     rs = RootsStore(roots)
-    for I in range(3):
+    for I in range(100):
         rs.add_roots(p.get_roots())
-    print(rs.get_stat())
+
     print(rs.get_results())
+    print(rs.get_roots_info())
+    print(rs.get_stat())
