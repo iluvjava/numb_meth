@@ -48,7 +48,7 @@ class RootsStore:
         Formats of storing the relevant info for stats
             Important intermediate results for computing the complex variance of the complex random variable.
         __RootsStats:
-            [[root1_sum, root1_squared_abs_sum, root1_count], [root2_sum, root2_squared_abs_sum, root2_count], ...]
+            [[root1_sum, root1_squared_abs_sum], [root2_sum, root2_squared_abs_sum], ...]
 
     """
 
@@ -56,11 +56,11 @@ class RootsStore:
         self.__RootsContainer = []
         self.__AllRoots = []
         self.__RootsStats = []
+        self.__SolveCount = 1
         for k in First_Roots.keys():
             self.__RootsContainer.append((k, First_Roots[k], [k]))
             self.__AllRoots.append([k])
-            self.__RootsStats.append((k, abs(k)**2, 1))
-
+            self.__RootsStats.append((k, abs(k)**2))
 
 
     def __get_index(self, Root: complex, Multiplicity: int):
@@ -74,7 +74,6 @@ class RootsStore:
         :return:
             The index of the root being inserted into the list of roots.
         """
-
         I = 0
         index = 0
         dis = abs(Root - self.__RootsContainer[0][0])
@@ -110,9 +109,9 @@ class RootsStore:
         for I in Index_List:
             self.__RootsContainer[I][2].append(Roots_List[I])
             self.__AllRoots[I].append(Roots_List[I])
-            self.__RootsStats[I][0] += Roots_List[I]
-            self.__RootsStats[I][1] += abs(Roots_List[I])**2
-            self.__RootsStats[I][2] += 1
+            t = (Roots_List[I] + self.__RootsStats[I][0], self.__RootsStats[I][1] + abs(Roots_List[I]**2))
+            self.__RootsStats[I] = t
+        self.__SolveCount += 1
         return
 
     def get_stat(self):
@@ -127,7 +126,8 @@ class RootsStore:
             ]
         """
         stats = []
-        for r, AbsSquareSum, count in self.__RootsStats:
+        for RootsSum, AbsSquareSum in self.__RootsStats:
+            t = (AbsSquareSum/self.__SolveCount, (abs(RootsSum)/self.__SolveCount)**2)
             pass
 
         return
