@@ -30,6 +30,8 @@ from core_modules.core2 import *
 from typing import Type, Dict
 MyPolynomial = Type[Polynomial]
 
+__all__ = ["ExtremeSolver"]
+
 
 class RootsStore:
     """

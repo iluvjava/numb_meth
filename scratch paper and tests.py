@@ -81,6 +81,18 @@ def test_analytical_deriv(p):
     print(p.derv_analytical())
     pass
 
+
+def extremesolve_demonstration():
+    """
+        Test the accuracy of the method, both using the output value of the roots
+        and compare the roots to the the correct solution of the roots.
+    :return:
+        None
+    """
+
+    pass
+
+
 if __name__=="__main__":
     main()
 
