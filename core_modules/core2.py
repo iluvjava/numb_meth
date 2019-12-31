@@ -313,9 +313,9 @@ def find_roots(p: MyPolynomial, results: Dict[Number, int] = None, precision:str
         a map in the format of {root1: multiplicity, root2: multiplicity.......}
     """
 
-    if p.deg() > 20 and results is None:
-        print("\033[93m" + "[Warning]: Polynomial has a degree higher than 20, root finding algorithm might fail "
-              "due to stiffness at the point near first guess or other reasons." + "\033[0m")
+    # if p.deg() > 20 and results is None:
+    #     print("\033[93m" + "[Warning]: Polynomial has a degree higher than 20, root finding algorithm might fail "
+    #           "due to stiffness at the point near first guess or other reasons." + "\033[0m")
 
     def roundup(root: Number, precision: str):
         """

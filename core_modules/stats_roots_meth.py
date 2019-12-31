@@ -162,7 +162,7 @@ class ExtremeSolver:
             1. Produce the most accurate roots from multiple solving.
             2. Produce an upper bound and a lower bound for the roots.
     """
-    def __init__(self, p: MyPolynomial, Repetition: int):
+    def __init__(self, p: MyPolynomial):
         """
             initiate the extreme solver with an instance of the polynomial.
         :param p:
@@ -171,19 +171,72 @@ class ExtremeSolver:
             How many time you want to repeatedly solve the polynomial?
         """
         self.__P = p
-        self.__Repetition = Repetition
+        self.__Cached = RootsStore(p.get_roots())
         pass
+
+    def solve_it(self, repetitions: int = 10):
+        """
+        Method will attempt to solve the polynomial repeatedly and return a sets of roots and
+        their respective standard deviation in complex plane.
+
+        The stats will be chached for multiple solving as long as it's the same instance of the extremesolve.
+
+        :return:
+            The roots averaged and the standard deviations of each of the root.
+        """
+        for I in range(repetitions):
+            self.__Cached.add_roots(p.get_roots())
+        return self.__Cached.get_stat()
+
+
+    def get_extreme_roots(self):
+        """
+        :return:
+            A set of very roots averaged out after the multiple solve.
+        """
+        res = []
+        for r, sd in self.__Cached.get_stat():
+            res.append(r)
+        return res
+
+    def get_DS(self):
+        res = []
+        for r, sd in self.__Cached.get_stat():
+            res.append(sd)
+        return res
 
 
 
 if __name__ == "__main__":
+
     print("Ok we are going to run some tests here. ")
     p = Polynomial({100:1, 0:1})
     roots = p.get_roots()
     rs = RootsStore(roots)
-    for I in range(100):
+    for I in range(10):
         rs.add_roots(p.get_roots())
 
     print(rs.get_results())
     print(rs.get_roots_info())
     print(rs.get_stat())
+
+    print("Ok, we are trying to use the extreme solver to obtain some stats about the roots. ")
+    p = Polynomial({20:1, 0:-1})
+    es = ExtremeSolver(p)
+    es.solve_it(30)
+    print(es.get_extreme_roots())
+    print("Cool, we are going to determine the maximum error.")
+    max_err = max([abs(p.eval_at(r)) for r in es.get_extreme_roots()])
+    print(max_err)
+
+    def test_extreme():
+        print("Ok, we are trying to use the extreme solver to obtain some stats about the roots. ")
+        p = Polynomial({12:1, 0:-1})
+        es = ExtremeSolver(p)
+        es.solve_it(1000)
+        print(es.get_extreme_roots())
+        print("Cool, we are going to determine the maximum error.")
+        max_err = max([abs(p.eval_at(r)) for r in es.get_extreme_roots()])
+        print(max_err)
+        print("stats")
+        print(es.get_DS())
