@@ -5,13 +5,15 @@
 
 from core_modules import *
 from typing import Type
+import math as m
 Mypolynomial = Type[Polynomial]
 
 
 def main():
     test_root_finding_precision()
     error_demo()
-    test_analytical_deriv(Polynomial([1 ,1, 1, 1]))
+    test_analytical_deriv(Polynomial([1, 1, 1, 1]))
+    extremesole_demo()
 
 
 def test_root_finding_precision():
@@ -82,15 +84,50 @@ def test_analytical_deriv(p):
     pass
 
 
-def extremesolve_demonstration():
+def extremesolve_test(degree: int = 20, repeatition: int = 100):
     """
         Test the accuracy of the method, both using the output value of the roots
         and compare the roots to the the correct solution of the roots.
     :return:
         None
     """
+    p = Polynomial({degree: 1, 0: -1})
+    es = ExtremeSolver(p)
 
-    pass
+    # Some helpful functions for our tasks.
+
+    def correct_root(i):
+        p1 = m.pi
+        return complex(m.cos(((2*p1)/degree)*i), m.sin(((2*p1)/degree)*i))
+
+    def find_distances(Correct_Soln, Extreme_Roots):
+        distance = []
+        for r in Extreme_Roots:
+            distance.append(min([abs(x - r) for x in Correct_Soln]))
+        return distance
+
+    correct_Roots = [correct_root(i) for i in range(degree)]
+
+    # Solving using extreme solver, repeating 100 times.
+    es.solve_it(repeatition)
+    distances = find_distances(correct_Roots, es.get_extreme_roots())
+    return distances
+
+
+def extremesole_demo():
+    print("Running codes that can demonstrate and measure the errors using the "
+          "roots of unity.")
+    upper_Limit, lower_Limit =100, 5 # inclusive
+    print(f"bounded above by a degree of: {upper_Limit}, bounded below by a degree of {lower_Limit}")
+
+    for degree in range(lower_Limit, upper_Limit + 1):
+        errors = extremesolve_test(degree, repeatition=10)
+        max_Error = max(errors)
+        average_Error = sum(errors)/len(errors)
+        print(f"degree: {degree}, max_error = {max_Error}, average_error = {average_Error}")
+
+    return
+
 
 
 if __name__=="__main__":

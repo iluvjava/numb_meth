@@ -152,7 +152,6 @@ class RootsStore:
         return self.__AllRoots
 
 
-
 class ExtremeSolver:
     """
         This class will take the solving scheme to absolute extreme and at the same time, having a more stable, simple
@@ -185,9 +184,8 @@ class ExtremeSolver:
             The roots averaged and the standard deviations of each of the root.
         """
         for I in range(repetitions):
-            self.__Cached.add_roots(p.get_roots())
+            self.__Cached.add_roots(self.__P.get_roots())
         return self.__Cached.get_stat()
-
 
     def get_extreme_roots(self):
         """
@@ -199,12 +197,11 @@ class ExtremeSolver:
             res.append(r)
         return res
 
-    def get_DS(self):
+    def get_sd(self):
         res = []
         for r, sd in self.__Cached.get_stat():
             res.append(sd)
         return res
-
 
 
 if __name__ == "__main__":
@@ -239,4 +236,4 @@ if __name__ == "__main__":
         max_err = max([abs(p.eval_at(r)) for r in es.get_extreme_roots()])
         print(max_err)
         print("stats")
-        print(es.get_DS())
+        print(es.get_sd())

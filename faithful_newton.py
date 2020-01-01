@@ -11,28 +11,31 @@ from typing import Type
 Mypolynomial = Type[Polynomial]
 from core_modules.misc import *
 
-def newton_iter(poly: Mypolynomial, x0: Number, TOL, maxitr):
+def newton_iter(poly: Mypolynomial, x0: Number, relTOL=1e-4, maxitr=200):
     """
-        it performs the newton raphson iteration.
+        it performs the newton Rapshson Iteration.
+        This is not solving it in any way, it just carries out the iteration and store
+        all the information with respect to the given initial conditions and parameters.
+
+        It will solve the polynomials first, then uses the roots to conclude the convergence.
+        It will also use the roots for fast and accurate evaluations of the function and the
+        derivative of the function for all the iterating points.
+
+        The iterating roots converge to a certain root given that it's in the range
+        of 2 stander deviation from the solved root, this is the condition for absolute
+        tolerance.
+
     :param poly:
         The polynomial object
     :param x0:
         The initial guess for roots
-    :param TOL:
-        Tolerance for exit conditions
+    :param relTOL:
+        Tolerance for relative tolerance, measure by abs(x_{n} - x_{n+1})
     :param maxitr:
         maximum iterations to prevent infinite loop
     :return:
-        The endpoint it converges to.
+        an object, in the form of map, represented in following format:
+
     """
 
-    pass
-
-def general_fixpoint_itr(g, relTol = 1e-10, maxitr = 200):
-    """
-        Given a function, it performs a general type of fixed point iteration.
-    :return:
-        The final value and a flag.
-    """
-    flag = None
-    pass
+    return

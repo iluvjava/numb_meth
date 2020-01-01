@@ -203,8 +203,11 @@ class Polynomial:
         :param: active
             when active is set to true, it won't store the value from the previous solve
             and return it for the future.
+
             When active is set to false, it will return the roots from previous solve if
             it has been already calculated.
+
+            default: True
         :return:
             A map, with complex roots as key and the multiplicity as the value.
         """
@@ -287,7 +290,6 @@ def find_root(p: MyPolynomial, x0: Number=None):
             continue
 
         # assert abs(p.eval_at(x1)) < 1e-4, f"Grave Error omg. x1 = {x1}, maxitr reached? :{itr == maxitr}"
-
         # Checking the fixed point function result for repeated roots.
         dgdx = (g(x1 + 1e-8) - g(x1))/1e-8
         if abs(dgdx) < 1e-2:
