@@ -12,8 +12,8 @@ Mypolynomial = Type[Polynomial]
 def main():
     test_root_finding_precision()
     error_demo()
-    test_analytical_deriv(Polynomial([1, 1, 1, 1]))
-    extremesole_demo()
+    # test_analytical_deriv(Polynomial([1, 1, 1, 1]))
+    # extremesolve_demo()
 
 
 def test_root_finding_precision():
@@ -67,12 +67,17 @@ def error_demo():
     print(f"at x = {x} then p(x) = {p.eval_at(x)}")
     print("However if given the roots of the polynomials, we can use the product and root's multiplicity for fast"
           "evaluation.")
-    print("Roots: ")
-    print(f"{find_roots(p)}")
+    print(f"Roots: {p.get_roots()}")
     print("Using the high precision product evaluation, we have: ")
+    v = p.eval_alt(x)
+    print(f"at x = {x}; p(x) = {v}")
+    assert abs(1e-18 - v) < 1e-20, "Error too big, please look into it."
+
+    print("We are trying to use multiple solves and the extreme solver to further increase the precison: ")
+    print(f"Roots multiple solves: {p.get_roots(Multiple_Solve=100)}")
     print(f"at x = {x}; p(x) = {p.eval_alt(x)}")
     print("Therefore, the eval_alt function has proven it's numerical superiority.")
-    pass
+
 
 
 def test_analytical_deriv(p):
@@ -114,7 +119,7 @@ def extremesolve_test(degree: int = 20, repeatition: int = 100):
     return distances
 
 
-def extremesole_demo():
+def extremesolve_demo():
     print("Running codes that can demonstrate and measure the errors using the "
           "roots of unity.")
     upper_Limit, lower_Limit =100, 5 # inclusive

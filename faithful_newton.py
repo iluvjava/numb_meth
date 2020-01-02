@@ -35,7 +35,6 @@ def newton_iter(poly: Mypolynomial, x0: Number, relTOL=1e-4, maxitr=200):
         maximum iterations to prevent infinite loop
     :return:
         an object, in the form of map, represented in following format:
-
     """
 
     return

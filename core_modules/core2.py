@@ -64,6 +64,7 @@ class Polynomial:
         """
         assert coefficients is not None, 'Coefficient list is None.'
         self.__Roots = None
+        self.__Extreme_Solver = None
         self._CoefficientsList = None
         self._Deg = None
 
@@ -175,8 +176,9 @@ class Polynomial:
         :return:
             The value of the polynomial evaluated at that point.
         """
+
         if self.__Roots is None:
-            self.__Roots = find_roots(self)
+            self.__Roots = self.get_roots(Multiple_Solve=10)
         RunningProduct = 1
         for r in self.__Roots.keys():
             RunningProduct *= (x - r)**self.__Roots[r]
@@ -197,7 +199,7 @@ class Polynomial:
             New_Coefficients.append(self._CoefficientsList[I]*(self._Deg - I));
         return Polynomial(New_Coefficients) if poly else New_Coefficients
 
-    def get_roots(self, active=True):
+    def get_roots(self, active=True, Multiple_Solve: int = 1):
         """
             Get all the original roots for this polynomial using the modified Newton
             Raphson method.
@@ -209,12 +211,26 @@ class Polynomial:
             it has been already calculated.
 
             default: True
+        :param Multiple_Solve
+            An integer that is greater or equal than 1.
+            It will solve the roots of the polynomial multiple times and take the average of it,
+            which will make it more accurate.
         :return:
             A map, with complex roots as key and the multiplicity as the value.
         """
         if self.__Roots is not None and not active:
             return self.__Roots
-        self.__Roots = find_roots(self)
+        if Multiple_Solve == 1:
+            self.__Roots = find_roots(self)
+            return self.__Roots
+        if abs(Multiple_Solve) > 1:
+            self.__Extreme_Solver = ExtremeSolver(self) if self.__Extreme_Solver is None else self.__Extreme_Solver
+            self.__Extreme_Solver.solve_it(repetitions=abs(Multiple_Solve))
+            # Extrac the result out and represent it in the classical way:
+            the_Roots = dict()
+            for root_Avg, sd, m in self.__Extreme_Solver.get_roots_data():
+                the_Roots[root_Avg] = m
+            self.__Roots = the_Roots
         return self.__Roots
 
 
@@ -240,13 +256,14 @@ class RootsStore:
         __RootsStats:
             [   [sum(x1), sum(x2), ...],
                 [sum(|x1|^2), sum(|x2|^2), ...],
-                [sum(|x1|), sum(|x2|), ...]
+                [sum(|x1|), sum(|x2|), ...],
+                [x1_multiplicity, x2_multiplicity, ....]
             ]
     """
     def __init__(self, First_Roots: Dict[Number, int]):
         self.__RootsContainer = []
         self.__AllRoots = []
-        self.__RootsStats = [[], [], []]
+        self.__RootsStats = [[], [], [], []]
         self.__SolveCount = 1
         for k in First_Roots.keys():
             self.__RootsContainer.append((k, First_Roots[k], [k]))
@@ -254,6 +271,7 @@ class RootsStore:
             self.__RootsStats[0].append(k)
             self.__RootsStats[1].append(abs(k)**2)
             self.__RootsStats[2].append(abs(k))
+            self.__RootsStats[3].append(First_Roots[k])
 
     def __get_index(self, Root: complex, Multiplicity: int):
         """
@@ -319,15 +337,19 @@ class RootsStore:
         :return:
             a list of info about each of the found root, it's presented in the following format:
             [
-                (root1_average, root1_sd)
+                (root1_average, root1_sd),
+                (root2_average, root2_sd),
+                ...
+                (root_n_average, root_n_sd)
             ]
         """
         stats = []
-        for sum, absSquareSum, absSum, in zip(self.__RootsStats[0], self.__RootsStats[1], self.__RootsStats[2]):
+        for sum, absSquareSum, absSum, mul in\
+                zip(self.__RootsStats[0], self.__RootsStats[1], self.__RootsStats[2], self.__RootsStats[3]):
             E_x = sum/self.__SolveCount
             E_abs_x2 = absSquareSum/self.__SolveCount
             E_abs_x = absSum/self.__SolveCount
-            stats.append((E_x, E_abs_x2 - E_abs_x**2))
+            stats.append((E_x, E_abs_x2 - E_abs_x**2, mul))
         return stats
 
     def get_results(self):
@@ -350,7 +372,7 @@ class RootsStore:
             -1 is returned if it's not close enough to any of the roots of this polynomial.
 
             Stored in the following format:
-
+            (int_representative, multiplicity)
         """
         pass
 
@@ -390,23 +412,36 @@ class ExtremeSolver:
             self.__Cached.add_roots(self.__P.get_roots())
         return self.__Cached.get_stat()
 
-    def get_extreme_roots(self):
+    def get_extreme_roots(self, flag:bool =False):
         """
             The a list extreme roots.
             Roots with multiplicity higher than 1 will get repeated in the array.
+        :param flag
+
         :return:
             A set of very roots averaged out after the multiple solve.
         """
         res = []
-        for r, sd in self.__Cached.get_stat():
+        for r, sd, m in self.__Cached.get_stat():
             res.append(r)
         return res
 
     def get_sd(self):
         res = []
-        for r, sd in self.__Cached.get_stat():
+        for r, sd, m in self.__Cached.get_stat():
             res.append(sd)
         return res
+
+    def get_roots_data(self):
+        """
+
+        :return:
+            All of the data relevant to the root in a an array of tuple containing 4 element, in the following
+            format:
+                (root_avg, root_sd, root_multiplicity)
+        """
+
+        return self.__Cached.get_stat()
 
 
 def val(a: Vector, alpha: Number) -> List[Number]:

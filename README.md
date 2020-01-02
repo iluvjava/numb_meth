@@ -28,6 +28,8 @@ from the polynomials.
         * Test at the end of the fixed point iteration, if p(x_final) is not small enough or x_final blown up, then try again with a new guess with a larger interval for the initial guess.  
 3. How to expand the root form of a polynomial into the regular form? 
     * Interpolation, but we need one extra points other than the roots to make it, interpolation is easy because we can just use the numpy module. 
+4. [URGENT] Extreme solver is not working for roots with multiplicity that is not 1, please see the htest in "scratch paper and tests.py" for more details. 
+    
         
 ## Potential Challenges: 
 1. **Smooth graphics of the fractals can be very hard to attain, Potential solution**
