@@ -13,7 +13,7 @@ def main():
     test_root_finding_precision()
     error_demo()
     # test_analytical_deriv(Polynomial([1, 1, 1, 1]))
-    # extremesolve_demo()
+    extremesolve_demo()
 
 
 def test_root_finding_precision():
@@ -50,6 +50,7 @@ def get_errors_for_poly(p: Mypolynomial):
         errors.append(abs(p.eval_at(r)))
     return max(errors)
 
+
 def error_demo():
     """
         Method demonstrates the numerical accuracy problem for polynomials having a very high degree as its
@@ -79,7 +80,6 @@ def error_demo():
     print(f"at x = {x}; p(x) = {v}")
     assert abs(1e-18 - v) < 1e-20, "Error too big, please look into it."
     print("Therefore, the eval_alt function has proven it's numerical superiority.")
-
 
 
 def test_analytical_deriv(p):
@@ -124,7 +124,7 @@ def extremesolve_test(degree: int = 20, repeatition: int = 100):
 def extremesolve_demo():
     print("Running codes that can demonstrate and measure the errors using the "
           "roots of unity.")
-    upper_Limit, lower_Limit =100, 5 # inclusive
+    upper_Limit, lower_Limit =30, 5 # inclusive
     print(f"bounded above by a degree of: {upper_Limit}, bounded below by a degree of {lower_Limit}")
 
     for degree in range(lower_Limit, upper_Limit + 1):
@@ -133,9 +133,13 @@ def extremesolve_demo():
         average_Error = sum(errors)/len(errors)
         print(f"degree: {degree}, max_error = {max_Error}, average_error = {average_Error}")
 
-
     #  Testing Extreme solve with repeated roots:
-    print("We are going to use the classic repeating roots to test for the ")
+    print("We are going to use the classic repeating roots to test for how well multiple solving scheme functions.")
+    p = Polynomial([1, 4, 6, 4, 1])
+    es = ExtremeSolver(p)
+    es.solve_it(repetitions=100)
+    print(f"This is the data for the roots: \n{es.get_roots_data()}")
+
     return
 
 

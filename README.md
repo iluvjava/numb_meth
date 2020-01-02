@@ -44,7 +44,7 @@ from the polynomials.
     roots. 
         * Solution: 
         * The problem has been addressed with an ExtremeSolver class, the class perform multiple solves on the same polynomials, then it take the average for each of the roots together produce a standard deviation for the roots. Then, the roots is used to evaluate the value of the polynomial in roots product form, increasing the precision dramatically. 
-        
+        * Instead of computing the derivative of the fixed point iteration, we should consider computing the derivative of the function at the point near the repeated roots and see if it's close to zero. Due to the cancellation error from the Nested Multiplications, it's likely that this will expose a repeated root. 
         
         
 ## Other stuff

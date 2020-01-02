@@ -394,8 +394,6 @@ class ExtremeSolver:
             initiate the extreme solver with an instance of the polynomial.
         :param p:
             An instance of the polynomial class.
-        :param Repetition:
-            How many time you want to repeatedly solve the polynomial?
         """
         self.__P = p
         self.__Cached = RootsStore(p.get_roots())
@@ -406,7 +404,7 @@ class ExtremeSolver:
         Method will attempt to solve the polynomial repeatedly and return a sets of roots and
         their respective standard deviation in complex plane.
 
-        The stats will be chached for multiple solving as long as it's the same instance of the extremesolve.
+        The stats will be cached for multiple solving as long as it's the same instance of the extreme_solve.
 
         :return:
             The roots averaged and the standard deviations of each of the root.
@@ -419,8 +417,6 @@ class ExtremeSolver:
         """
             The a list extreme roots.
             Roots with multiplicity higher than 1 will get repeated in the array.
-        :param flag
-
         :return:
             A set of very roots averaged out after the multiple solve.
         """
@@ -480,7 +476,7 @@ def derv_val(a: Vector, alpha: Number, depth: int=0) -> List[List[Number]]:
     return results
 
 
-def find_root(p: MyPolynomial, x0: Number=None):
+def find_root(p: MyPolynomial, x0:Number=None):
     """
         Attempts to solve the polynomial at that point.
     :param p:
@@ -518,10 +514,12 @@ def find_root(p: MyPolynomial, x0: Number=None):
 
         # assert abs(p.eval_at(x1)) < 1e-4, f"Grave Error omg. x1 = {x1}, maxitr reached? :{itr == maxitr}"
         # Checking the fixed point function result for repeated roots.
-        dgdx = (g(x1 + 1e-8) - g(x1))/1e-8
-        
-        if abs(dgdx) < 1e-2:  # Good for having a multiplicity less than 100.
-            return x1, k + 1  # Root attained.
+        # dgdx = (g(x1 + 1e-8) - g(x1))/1e-8
+        # if abs(dgdx) < 1e-2:  # Good for having a multiplicity less than 100.
+        #     return x1, k + 1  # Root attained.
+
+        if abs(p.eval_at(x1, derv=k + 1)) > 1e-4:  # The root is not a root with multiplicity larger than or equal to 2.
+            return x1, k + 1
         k += 1
         continue
 
@@ -575,7 +573,6 @@ def find_roots(p: MyPolynomial, results: Dict[Number, int] = None, precision:str
     results[roundup(root, precision)] = multiplicity
     p = p.factor_out(root, multiplicity=multiplicity, poly=True)
     return find_roots(p, results, precision)
-
 
 
 if __name__ == '__main__':
