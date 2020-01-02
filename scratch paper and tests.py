@@ -75,7 +75,9 @@ def error_demo():
 
     print("We are trying to use multiple solves and the extreme solver to further increase the precison: ")
     print(f"Roots multiple solves: {p.get_roots(Multiple_Solve=100)}")
-    print(f"at x = {x}; p(x) = {p.eval_alt(x)}")
+    v = p.eval_alt(x)
+    print(f"at x = {x}; p(x) = {v}")
+    assert abs(1e-18 - v) < 1e-20, "Error too big, please look into it."
     print("Therefore, the eval_alt function has proven it's numerical superiority.")
 
 

@@ -264,7 +264,6 @@ class RootsStore:
         self.__RootsContainer = []
         self.__AllRoots = []
         self.__RootsStats = [[], [], [], []]
-        self.__SolveCount = 1
         for k in First_Roots.keys():
             self.__RootsContainer.append((k, First_Roots[k], [k]))
             self.__AllRoots.append([k])
@@ -272,6 +271,8 @@ class RootsStore:
             self.__RootsStats[1].append(abs(k)**2)
             self.__RootsStats[2].append(abs(k))
             self.__RootsStats[3].append(First_Roots[k])
+        #  This could be unnecessary because it's given as the len of the inner array in __AllRoots.
+        self.__SolveCount = 1
 
     def __get_index(self, Root: complex, Multiplicity: int):
         """
@@ -344,11 +345,12 @@ class RootsStore:
             ]
         """
         stats = []
+        counts = len(self.__AllRoots[0])
         for sum, absSquareSum, absSum, mul in\
                 zip(self.__RootsStats[0], self.__RootsStats[1], self.__RootsStats[2], self.__RootsStats[3]):
-            E_x = sum/self.__SolveCount
-            E_abs_x2 = absSquareSum/self.__SolveCount
-            E_abs_x = absSum/self.__SolveCount
+            E_x = sum/counts
+            E_abs_x2 = absSquareSum/counts
+            E_abs_x = absSum/counts
             stats.append((E_x, E_abs_x2 - E_abs_x**2, mul))
         return stats
 
@@ -374,6 +376,7 @@ class RootsStore:
             Stored in the following format:
             (int_representative, multiplicity)
         """
+        assert False, "Method is not implemented yet."
         pass
 
 
@@ -412,7 +415,7 @@ class ExtremeSolver:
             self.__Cached.add_roots(self.__P.get_roots())
         return self.__Cached.get_stat()
 
-    def get_extreme_roots(self, flag:bool =False):
+    def get_extreme_roots(self):
         """
             The a list extreme roots.
             Roots with multiplicity higher than 1 will get repeated in the array.
