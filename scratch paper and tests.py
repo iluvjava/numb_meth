@@ -133,6 +133,9 @@ def extremesolve_demo():
         average_Error = sum(errors)/len(errors)
         print(f"degree: {degree}, max_error = {max_Error}, average_error = {average_Error}")
 
+
+    #  Testing Extreme solve with repeated roots:
+    print("We are going to use the classic repeating roots to test for the ")
     return
 
 

@@ -29,7 +29,7 @@ from the polynomials.
 3. How to expand the root form of a polynomial into the regular form? 
     * Interpolation, but we need one extra points other than the roots to make it, interpolation is easy because we can just use the numpy module. 
 4. [URGENT] For repeated roots, there is a chance the roots are slightly off, could be a result that the algorithm didn't detect the existence of repeated root during the Newton Iteration. 
-   
+   * The problem is, the derivative of the fixed-point function near the root is larger than a threshold, causing it to be mis-identified as a root that is not repeating. My guess is, it's caused by just taking the derivative of the fixed-point function along the real line.... 
     
         
 ## Potential Challenges: 

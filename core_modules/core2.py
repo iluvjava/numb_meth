@@ -519,8 +519,9 @@ def find_root(p: MyPolynomial, x0: Number=None):
         # assert abs(p.eval_at(x1)) < 1e-4, f"Grave Error omg. x1 = {x1}, maxitr reached? :{itr == maxitr}"
         # Checking the fixed point function result for repeated roots.
         dgdx = (g(x1 + 1e-8) - g(x1))/1e-8
-        if abs(dgdx) < 1e-2:
-            return x1, k + 1 # Root attained.
+        
+        if abs(dgdx) < 1e-2:  # Good for having a multiplicity less than 100.
+            return x1, k + 1  # Root attained.
         k += 1
         continue
 
