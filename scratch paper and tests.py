@@ -140,6 +140,7 @@ def extremesolve_demo():
     es.solve_it(repetitions=100)
     print(f"This is the data for the roots: \n{es.get_roots_data()}")
 
+
     return
 
 
