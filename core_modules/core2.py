@@ -167,7 +167,7 @@ class Polynomial:
         """
         return self._Deg
 
-    def eval_alt(self, x):
+    def ponyval(self, x):
         """
             This is an alternative method for ill-conditioned polynomials.
             Perform a high precision evaluations of the polynomial using the roots of the polynomials.
@@ -176,7 +176,6 @@ class Polynomial:
         :return:
             The value of the polynomial evaluated at that point.
         """
-
         if self.__Roots is None:
             self.__Roots = self.get_roots(Multiple_Solve=10)
         RunningProduct = self._CoefficientsList[0]

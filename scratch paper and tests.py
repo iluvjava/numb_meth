@@ -71,16 +71,16 @@ def error_demo():
           "evaluation.")
     print(f"Roots: {p.get_roots()}")
     print("Using the high precision product evaluation, we have: ")
-    v = p.eval_alt(x)
+    v = p.ponyval(x)
     print(f"at x = {x}; p(x) = {v}")
     assert abs(1e-18 - v) < 1e-20, "Error too big, please look into it."
 
     print("We are trying to use multiple solves and the extreme solver to further increase the precison: ")
     print(f"Roots multiple solves: {p.get_roots(Multiple_Solve=100)}")
-    v = p.eval_alt(x)
+    v = p.ponyval(x)
     print(f"at x = {x}; p(x) = {v}")
     assert abs(1e-18 - v) < 1e-20, "Error too big, please look into it."
-    print("Therefore, the eval_alt function has proven it's numerical superiority.")
+    print("Therefore, the ponyval function has proven it's numerical superiority.")
 
 
 def test_analytical_deriv(p):
