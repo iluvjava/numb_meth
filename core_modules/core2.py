@@ -33,6 +33,7 @@ from typing import Type, Dict
 from random import random
 from math import isnan
 from typing import List, Union, Dict
+import core_modules.misc as misc
 
 Number = Union[float, int, complex]
 Vector = List[Number]
@@ -490,7 +491,7 @@ def find_root(p: MyPolynomial, x0:Number=None):
     k = 0
     # The kth derivative
 
-    while k + 1 <= p._Deg:
+    while k + 1 <= p.deg():
         # define fixed point function
         def g(point):
             res = p.eval_all(point, derv=k + 1)
@@ -515,7 +516,8 @@ def find_root(p: MyPolynomial, x0:Number=None):
         # dgdx = (g(x1 + 1e-8) - g(x1))/1e-8
         # if abs(dgdx) < 1e-2:  # Good for having a multiplicity less than 100.
         #     return x1, k + 1  # Root attained.
-        if abs(p.eval_at(x1, derv=k + 1)) > 1e-4:  # The root is not a root with multiplicity larger than or equal to 2.
+        if abs(p.eval_at(x1, derv=k + 1))/misc.partial_factorial(p.deg() - k, p.deg()) > 1e-2:
+        # The root is not a root with multiplicity larger than or equal to 2.
             return x1, k + 1
         k += 1
         continue
