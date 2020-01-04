@@ -6,12 +6,13 @@
 from core_modules import *
 from typing import Type
 import math as m
+from binomial_coefficients import *
 Mypolynomial = Type[Polynomial]
 
 
 def main():
-    test_root_finding_precision()
-    error_demo()
+    # test_root_finding_precision()
+    # error_demo()
     # test_analytical_deriv(Polynomial([1, 1, 1, 1]))
     extremesolve_demo()
 
@@ -122,6 +123,7 @@ def extremesolve_test(degree: int = 20, repeatition: int = 100):
 
 
 def extremesolve_demo():
+
     print("Running codes that can demonstrate and measure the errors using the "
           "roots of unity.")
     upper_Limit, lower_Limit =30, 5 # inclusive
@@ -140,7 +142,13 @@ def extremesolve_demo():
     es.solve_it(repetitions=100)
     print(f"This is the data for the roots: \n{es.get_roots_data()}")
 
-
+    print("Ok let's try something hellish and see if it can still work with that: ")
+    coefficients = get_row(10)
+    print(f"This is a coefficients we have for the polynomial: {coefficients}")
+    print("The solution for the polynomial should be x = -1")
+    p = Polynomial(coefficients)
+    the_Roots = p.get_roots()
+    print(f"Here is the solution from {the_Roots}")
     return
 
 

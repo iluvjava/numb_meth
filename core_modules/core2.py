@@ -55,7 +55,7 @@ class Polynomial:
             self._Deg:
                 The maximum power of x in the polynomial.
 
-            a_0 should not be zero! leading zeros will be trimmed.
+            [!IMPORTANT] a_0 should not be zero! leading zeros will be trimmed
             :param coefficients:
                 * a map, maps the power of x to its coefficients
                 * a array, [a_0, a_1, a_2..., a_n]
@@ -179,7 +179,7 @@ class Polynomial:
 
         if self.__Roots is None:
             self.__Roots = self.get_roots(Multiple_Solve=10)
-        RunningProduct = 1
+        RunningProduct = self._CoefficientsList[0]
         for r in self.__Roots.keys():
             RunningProduct *= (x - r)**self.__Roots[r]
         return RunningProduct
@@ -511,13 +511,11 @@ def find_root(p: MyPolynomial, x0:Number=None):
             right *= 2
             x0 = complex((right - left)*random() - right, (right - left)*random() - right)
             continue
-
         # assert abs(p.eval_at(x1)) < 1e-4, f"Grave Error omg. x1 = {x1}, maxitr reached? :{itr == maxitr}"
         # Checking the fixed point function result for repeated roots.
         # dgdx = (g(x1 + 1e-8) - g(x1))/1e-8
         # if abs(dgdx) < 1e-2:  # Good for having a multiplicity less than 100.
         #     return x1, k + 1  # Root attained.
-
         if abs(p.eval_at(x1, derv=k + 1)) > 1e-4:  # The root is not a root with multiplicity larger than or equal to 2.
             return x1, k + 1
         k += 1
