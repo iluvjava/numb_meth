@@ -149,6 +149,16 @@ def extremesolve_demo():
     p = Polynomial(coefficients)
     the_Roots = p.get_roots()
     print(f"Here is the solution from {the_Roots}")
+
+    print("Ok let's try to make it even worse and see if it can find the root with a multiplicity of 20: ")
+    coefficients = get_row(20)
+    print(f"This is the list of coefficients for the polynomial: {coefficients}")
+    p = Polynomial(coefficients)
+    for I in range(20):
+        the_Roots = p.get_roots()
+        print(f"Here is the result from the root search: {the_Roots}")
+
+
     return
 
 
