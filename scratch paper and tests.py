@@ -154,11 +154,9 @@ def extremesolve_demo():
     coefficients = get_row(20)
     print(f"This is the list of coefficients for the polynomial: {coefficients}")
     p = Polynomial(coefficients)
-    for I in range(20):
+    for I in range(10):
         the_Roots = p.get_roots()
         print(f"Here is the result from the root search: {the_Roots}")
-
-
     return
 
 

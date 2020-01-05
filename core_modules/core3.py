@@ -7,14 +7,24 @@
 """
 
 from numpy import *
-
+from typing import List
 
 class PolynomialProductForm:
     """
-    This is a class that define the polynomial in its product form.
+        This is a class that define the polynomial in its product form.
+        It can transform into the expanded form, or do some quick evaluations too.
     """
     def __init__(self):
         pass
+
+
+
+def pony_multiply():
+    """
+
+    :return:
+    """
+    pass
 
 
 
