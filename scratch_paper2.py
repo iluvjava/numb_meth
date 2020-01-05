@@ -71,7 +71,6 @@ def pony_multiply(P1:List[Number], N1:int, P2:List[Number], N2:int):
     output_Values = []
     for I in qry_Points:
         output_Values.append(PQ(I))
-
     return fft.ifft(output_Values)
 
 
@@ -91,6 +90,8 @@ def main():
     print("This is the Nth roots of unity with N = 4:")
     res = nth_roots_unity(4)
     print(res)
+
+    print("Trying to test the multiplying capability of the the function: ")
 
 
 
