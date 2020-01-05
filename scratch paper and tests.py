@@ -158,7 +158,6 @@ def extremesolve_demo():
         the_Roots = p.get_roots()
         print(f"Here is the result from the root search: {the_Roots}")
 
-
     return
 
 
