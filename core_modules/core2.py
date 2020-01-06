@@ -519,7 +519,7 @@ def find_root(p: MyPolynomial, x0:Number=None):
             x1 = g(x1)
             itr += 1
 
-        # Blocks invalid solution and try again with a new guess, x0
+        # Blocks invalid\bad solution and try again with a new guess, x0
         if isnan(x1.real) or isnan(x1.imag) or abs(p.eval_at(x1)) > 1e-4:
             left *= 2
             right *= 2
