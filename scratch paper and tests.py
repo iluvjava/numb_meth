@@ -154,8 +154,9 @@ def extremesolve_demo():
     coefficients = get_row(20)
     print(f"This is the list of coefficients for the polynomial: {coefficients}")
     p = Polynomial(coefficients)
-    for I in range(10):
+    for I in range(5):
         the_Roots = p.get_roots()
+        assert abs(the_Roots - complex(-1, 0)) < 1e-15, "We might have gotten the wrong solution. "
         print(f"Here is the result from the root search: {the_Roots}")
     return
 

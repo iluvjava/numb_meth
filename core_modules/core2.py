@@ -233,6 +233,18 @@ class Polynomial:
             self.__Roots = the_Roots
         return self.__Roots
 
+    def normalized(self):
+        """
+        This method is created for the concern of numerical precision lots when the leading coefficients of the
+        polynomial is extremely large.
+
+        This will convert the polynomial with a leading coefficients of 1 where the resulting "normalized"
+        polynomial will have the same roots compare to the previous one.
+        :return:
+            An instance of the normalized polynomial.
+        """
+        pass
+
 
 MyPolynomial = Type[Polynomial]
 
@@ -453,11 +465,12 @@ def val(a: Vector, alpha: Number) -> List[Number]:
     :return:
     """
     assert not(a is None or len(a) == 0), 'Error'
-    b = [a[0]]
-    i = 1
     l = len(a)
+    b = [None]*l
+    b[0] = a[0]
+    i = 1
     while i < l:
-        b.append(alpha * b[i - 1] + a[i])
+        b[i] = (alpha * b[i - 1] + a[i])
         i += 1
     return b
 
@@ -575,42 +588,4 @@ def find_roots(p: MyPolynomial, results: Dict[Number, int] = None, precision:str
 
 
 if __name__ == '__main__':
-    p = Polynomial([1, 1, 1])
-    print(p)
-    res = p.eval_all(1, derv=2)
-    print(res)
-
-    res = p.eval_all([x/100 for x in range(100)])
-    print(res)
-
-    p = Polynomial([1]*100) # should be 1/(1-x) for x in (-1, 1)
-    print(p.eval_all(-0.5))
-
-    p = Polynomial([1/x for x in range(100, 0, -1)] + [0]) # should be ln(1-x) for x in (-1, 1)
-    print(p.eval_all(-0.5, 3))
-
-    p = Polynomial([1, 2, 1])
-    print("A thing about truncation error: ")
-    print(p.eval_all(-1 - 1e-13, derv=2))
-
-    print("Slow convergence and bad accuracy for repeated roots. ")
-    print("Testing Eval_at functionality: ")
-
-    p = Polynomial([1, 1, 1])
-    print(p)
-
-    print(f"Evaluating p''(1): {p.eval_at(1, derv=2)}")
-    print(f"Evaluating p'(1): {p.eval_at(1, derv=1)}")
-    print(f"Evaluating p(1): {p.eval_at(1)}")
-
-    p = Polynomial({50: 1, 0: -1})
-    print(f"Try to find the roots for: {p}")
-    print(find_roots(p, precision="high"))
-
-    p = Polynomial({100: 1, 0: -1})
-    print(f"Try to find the roots for: {p}")
-    print(find_roots(p, precision="high"))
-
-    p = Polynomial([1, 3, 3, 1])
-    print(f"Try to rind the roots for {p}")
-    print(find_roots(p))
+    pass
