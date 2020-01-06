@@ -243,7 +243,8 @@ class Polynomial:
         :return:
             An instance of the normalized polynomial.
         """
-        pass
+        n = self._CoefficientsList[0]
+        return Polynomial([x/n for x in self._CoefficientsList])
 
 
 MyPolynomial = Type[Polynomial]
@@ -584,6 +585,7 @@ def find_roots(p: MyPolynomial, results: Dict[Number, int] = None, precision:str
     root, multiplicity = find_root(p)
     results[roundup(root, precision)] = multiplicity
     p = p.factor_out(root, multiplicity=multiplicity, poly=True)
+    p = p.normalized()  # Normalized the polynomial after factoring out the previously found root.
     return find_roots(p, results, precision)
 
 

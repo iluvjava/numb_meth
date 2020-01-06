@@ -156,8 +156,9 @@ def extremesolve_demo():
     p = Polynomial(coefficients)
     for I in range(5):
         the_Roots = p.get_roots()
-        assert abs(the_Roots - complex(-1, 0)) < 1e-15, "We might have gotten the wrong solution. "
         print(f"Here is the result from the root search: {the_Roots}")
+        assert abs(list(the_Roots)[0] - complex(-1, 0)) < 1e-10, "We might have gotten the wrong solution. "
+
     return
 
 
