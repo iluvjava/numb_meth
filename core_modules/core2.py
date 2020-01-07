@@ -490,7 +490,7 @@ def derv_val(a: Vector, alpha: Number, depth: int=0) -> List[List[Number]]:
     return results
 
 
-def find_root(p: MyPolynomial, x0:Number=None):
+def find_root(p: MyPolynomial, x0:Number=None, TOL = 1e-14):
     """
         Attempts to solve the polynomial at that point.
     :param p:
@@ -500,12 +500,12 @@ def find_root(p: MyPolynomial, x0:Number=None):
     """
     left, right = -1, 1
     x0 = complex((right - left)*random() - right, (right - left)*random() - right) if x0 is None else x0
-    TOL = 1e-15
-    maxitr = 1e4
+    maxitr = 1e+4
     k = 0
     # The kth derivative
-
+    retries = 0
     while k + 1 <= p.deg():
+
         # define fixed point function
         def g(point):
             res = p.eval_all(point, derv=k + 1)
@@ -521,17 +521,22 @@ def find_root(p: MyPolynomial, x0:Number=None):
 
         # Blocks invalid\bad solution and try again with a new guess, x0
         if isnan(x1.real) or isnan(x1.imag) or abs(p.eval_at(x1)) > 1e-4:
-            left *= 2
-            right *= 2
+            left *= 1.1
+            right *= 1.1
+            assert right < 2**900 and retries < 100, \
+                f"Retries too many times something is wrong:" \
+                f" \n {p} \n x1 ={x1} \n itr={itr} \n p(x1) = {p.eval_at(x1)} \n k = {k}"
             x0 = complex((right - left)*random() - right, (right - left)*random() - right)
+            retries += 1
             continue
-        # assert abs(p.eval_at(x1)) < 1e-4, f"Grave Error omg. x1 = {x1}, maxitr reached? :{itr == maxitr}"
-        # Checking the fixed point function result for repeated roots.
-        # dgdx = (g(x1 + 1e-8) - g(x1))/1e-8
-        # if abs(dgdx) < 1e-2:  # Good for having a multiplicity less than 100.
-        #     return x1, k + 1  # Root attained.
-        if abs(p.eval_at(x1, derv=k + 1))/misc.partial_factorial(p.deg() - k, p.deg()) > 1e-2:
-        # The root is not a root with multiplicity larger than or equal to 2.
+
+        def is_repeating_roots(p, k, x1):
+            if k + 1 == p.deg():
+                return False
+            fx_point_derv = (g(x1 + 1e-4) - g(x1 - 1e-4))/1e-4
+            return abs(fx_point_derv) > 1e-1
+
+        if not is_repeating_roots(p, k, x1):
             return x1, k + 1
         k += 1
         continue
@@ -539,7 +544,7 @@ def find_root(p: MyPolynomial, x0:Number=None):
     return None # Not converging.
 
 
-def find_roots(p: MyPolynomial, results: Dict[Number, int] = None, precision:str = None):
+def find_roots(p: MyPolynomial, results: Dict[Number, int] = None, precision:str = None, last_Root = None):
     """
         Function find all the roots of the polynomials, runtime of the method is not bounded because of the
         stochastic process involved.
@@ -554,9 +559,6 @@ def find_roots(p: MyPolynomial, results: Dict[Number, int] = None, precision:str
         a map in the format of {root1: multiplicity, root2: multiplicity.......}
     """
 
-    # if p.deg() > 20 and results is None:
-    #     print("\033[93m" + "[Warning]: Polynomial has a degree higher than 20, root finding algorithm might fail "
-    #           "due to stiffness at the point near first guess or other reasons." + "\033[0m")
 
     def roundup(root: Number, precision: str):
         """
@@ -582,12 +584,25 @@ def find_roots(p: MyPolynomial, results: Dict[Number, int] = None, precision:str
     results = results if results is not None else {}
     if p.deg() == 0:
         return results
-    root, multiplicity = find_root(p)
-    results[roundup(root, precision)] = multiplicity
+    root, multiplicity = find_root(p, last_Root)
+    root_roundup = roundup(root, precision)
+    results[root_roundup] = multiplicity
     p = p.factor_out(root, multiplicity=multiplicity, poly=True)
     p = p.normalized()  # Normalized the polynomial after factoring out the previously found root.
-    return find_roots(p, results, precision)
+    return find_roots(p, results=results, precision=precision, last_Root = roundup(root_roundup, precision="low"))
 
 
 if __name__ == '__main__':
     pass
+
+
+
+
+
+
+
+
+
+
+
+

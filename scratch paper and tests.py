@@ -126,7 +126,7 @@ def extremesolve_demo():
 
     print("Running codes that can demonstrate and measure the errors using the "
           "roots of unity.")
-    upper_Limit, lower_Limit =30, 5 # inclusive
+    upper_Limit, lower_Limit = 80, 5 # inclusive
     print(f"bounded above by a degree of: {upper_Limit}, bounded below by a degree of {lower_Limit}")
 
     for degree in range(lower_Limit, upper_Limit + 1):
@@ -139,11 +139,11 @@ def extremesolve_demo():
     print("We are going to use the classic repeating roots to test for how well multiple solving scheme functions.")
     p = Polynomial([1, 4, 6, 4, 1])
     es = ExtremeSolver(p)
-    es.solve_it(repetitions=100)
+    es.solve_it(repetitions=10)
     print(f"This is the data for the roots: \n{es.get_roots_data()}")
 
     print("Ok let's try something hellish and see if it can still work with that: ")
-    coefficients = get_row(10)
+    coefficients = get_row(5)
     print(f"This is a coefficients we have for the polynomial: {coefficients}")
     print("The solution for the polynomial should be x = -1")
     p = Polynomial(coefficients)
@@ -154,7 +154,10 @@ def extremesolve_demo():
     coefficients = get_row(20)
     print(f"This is the list of coefficients for the polynomial: {coefficients}")
     p = Polynomial(coefficients)
-    for I in range(5):
+    print("This kind of polynomial has a really bad numerical precision when evaluating near the root. ")
+    x = complex(-0.9, 0.01)
+    print(f"Evalutate p({x}) = {p.eval_all(x, derv=20)}")
+    for I in range(20):
         the_Roots = p.get_roots()
         print(f"Here is the result from the root search: {the_Roots}")
         assert abs(list(the_Roots)[0] - complex(-1, 0)) < 1e-10, "We might have gotten the wrong solution. "
